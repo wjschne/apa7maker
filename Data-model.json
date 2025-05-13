@@ -1,0 +1,232 @@
+{
+  "author": {
+    "tableName": ["author"],
+    "fields": [
+      {
+        "name": "author_id",
+        "type": "integer",
+        "nullable": false,
+        "unique": true,
+        "comment": ""
+      },
+      {
+        "name": "author_name",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "author_url",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "author_email",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "author_phone",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "author_degrees",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "author_orcid",
+        "type": "character",
+        "nullable": false,
+        "unique": true,
+        "comment": ""
+      },
+      {
+        "name": "author_deceased",
+        "type": "logical",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      }
+    ],
+    "primaryKey": ["author_id"],
+    "foreignKeys": [
+      {
+        "refTable": ["authoraffiliation"],
+        "key": [
+          {
+            "from": "author_id",
+            "to": "author_id"
+          }
+        ],
+        "cardinality": [1, 1, 0, -1]
+      }
+    ],
+    "indexes": [
+      {
+        "fields": ["author_id"],
+        "unique": [true]
+      }
+    ],
+    "display": {
+      "x": [-53],
+      "y": [-75],
+      "color": ["NA"],
+      "comment": ["NA"]
+    }
+  },
+  "affiliation": {
+    "tableName": ["affiliation"],
+    "fields": [
+      {
+        "name": "affiliation_id",
+        "type": "integer",
+        "nullable": false,
+        "unique": true,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_name",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_department",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_group",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_address",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_city",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_region",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_country",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_postal-code",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_url",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      }
+    ],
+    "indexes": [
+      {
+        "fields": ["affiliation_id"],
+        "unique": [true]
+      }
+    ],
+    "display": {
+      "x": [-386],
+      "y": [-52],
+      "color": ["NA"],
+      "comment": ["NA"]
+    },
+    "primaryKey": ["affiliation_id"],
+    "foreignKeys": [
+      {
+        "refTable": ["authoraffiliation"],
+        "key": [
+          {
+            "from": "affiliation_id",
+            "to": "affiliation_id"
+          }
+        ],
+        "cardinality": [0, -1, 1, 1]
+      }
+    ]
+  },
+  "authoraffiliation": {
+    "tableName": ["authoraffiliation"],
+    "fields": [
+      {
+        "name": "authoraffiliation_id",
+        "type": "integer",
+        "nullable": false,
+        "unique": true,
+        "comment": ""
+      },
+      {
+        "name": "author_id",
+        "type": "integer",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "affiliation_id",
+        "type": "integer",
+        "nullable": false,
+        "unique": true,
+        "comment": ""
+      }
+    ],
+    "foreignKeys": {},
+    "indexes": [
+      {
+        "fields": ["authoraffiliation_id"],
+        "unique": [true]
+      },
+      {
+        "fields": ["affiliation_id"],
+        "unique": [true]
+      }
+    ],
+    "display": {
+      "x": [47],
+      "y": [76],
+      "color": ["NA"],
+      "comment": ["NA"]
+    },
+    "primaryKey": ["authoraffiliation_id"]
+  }
+}
