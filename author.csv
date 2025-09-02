@@ -1,2 +1,3 @@
-author_id,author_name,author_url,author_email,author_phone,author_fax,author_degrees,author_orcid,author_deceased
-1,FirstName M. LastName,,whatever@generic.edu,,,,,FALSE
+author_id,author_name,author_orcid,author_email,author_corresponding,author_deceased,role_conceptualization,role_data_curation,role_formal_analysis,role_funding_acquisition,role_investigation,role_methodology,role_project_administration,role_resources,role_software,role_supervision,role_validation,role_visualization,role_writing,role_editing
+1,fred,,,TRUE,FALSE,Yes,Yes,equal,No,No,No,No,No,No,No,No,No,No,lead
+2,fred2,,,FALSE,FALSE,Yes,Yes,equal,Yes,No,No,No,No,No,No,No,No,No,supporting
