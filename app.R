@@ -10,6 +10,9 @@ library(stringr)
 library(purrr)
 library(yaml)
 library(rclipboard)
+library(readr)
+library(snakecase)
+library(tibble)
 # set_grid_theme(
 #   row.even.background = "#ddebf7",
 #   cell.normal.border = "#9bc2e6",
@@ -440,7 +443,7 @@ ui <- page_fluid(
       panel(
         status = "primary",
         heading = "Language Options",
-        shiny::selectInput(
+        selectInput(
           inputId = "lang",
           label = span(
             "Primary Language ",
@@ -545,21 +548,21 @@ ui <- page_fluid(
 )
 # server ----
 server <- function(input, output, session) {
-  d_author <- readr::read_csv("author.csv", col_types = "icccllcccccccccccccc")
+  d_author <- read_csv("author.csv", col_types = "icccllcccccccccccccc")
   
-  d_affiliation <- readr::read_csv("affiliation.csv", col_types = "iiccccccccc")
+  d_affiliation <- read_csv("affiliation.csv", col_types = "iiccccccccc")
   
   cnames <- colnames(d_author) |>
-    stringr::str_remove_all("^author_") |>
-    stringr::str_remove_all("^role_") |>
-    snakecase::to_title_case()
+    str_remove_all("^author_") |>
+    str_remove_all("^role_") |>
+    to_title_case()
   cnames[cnames == "Orcid"] <- "ORCID"
   cnames[cnames == "Id"] <- "Delete"
   
   anames <- colnames(d_affiliation) |>
-    stringr::str_remove_all("^affiliation_") |>
-    stringr::str_remove_all("^role_") |>
-    snakecase::to_title_case()
+    str_remove_all("^affiliation_") |>
+    str_remove_all("^role_") |>
+    to_title_case()
   
   anames[anames == "Url"] <- "URL"
   anames[anames == "Id"] <- "Delete"
@@ -829,7 +832,7 @@ server <- function(input, output, session) {
   observeEvent(input$affiliation_delete, {
     delete_id <- as.numeric(input$affiliation_delete)
     r_affiliation(r_affiliation() |>
-                    dplyr::filter(affiliation_id != delete_id))
+                    filter(affiliation_id != delete_id))
     
     
     data = input$gd_affiliation_data
@@ -861,7 +864,7 @@ server <- function(input, output, session) {
               return(NA)
             role_level <- d |>
               filter(value != "Yes") |>
-              tibble::deframe() |>
+              deframe() |>
               as.list()
             role <- d |>
               filter(value == "Yes") |>
