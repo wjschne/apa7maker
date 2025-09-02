@@ -1,3 +1,4 @@
+webr::install("dplyr")
 library(toastui)
 library(shiny)
 library(dplyr)
