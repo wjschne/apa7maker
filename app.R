@@ -1,4 +1,3 @@
-webr::install("dplyr")
 library(toastui)
 library(shiny)
 library(dplyr)
@@ -538,6 +537,7 @@ ui <- page_fluid(
         heading = "Make Document",
         status = "primary",
         actionButton("btnmakedocument", label = "Update", class = "mb-2"),
+        downloadButton("downloadData", "Download", class = "mb-2"),
         br(),
         uiOutput("makedocument")
       )
@@ -571,6 +571,7 @@ server <- function(input, output, session) {
   author_select <- reactiveVal(1)
   r_affiliation_current <- reactiveVal(d_affiliation)
   r_affiliation <- reactiveVal(d_affiliation)
+  r_yaml <- reactiveVal("")
   
   
   # gd_author ----
@@ -1114,15 +1115,28 @@ server <- function(input, output, session) {
             verbatimTextOutput("yaml_output", placeholder = TRUE)
           )
         )
-        
+        r_yaml(doc_yaml)
         output$yaml_output <- renderText(doc_yaml)
-      
+        
+
+          
+        
+        output$downloadData <- downloadHandler(filename = function() {
+          "mydocument.qmd"
+        } ,
+        content = function(file) {
+          cat(r_yaml(), file = file)
+        }, contentType = "text/plain")
     
     
     
     
     
   })
+  
+
+  
+
   
   
   
