@@ -39,7 +39,7 @@ ifempty <- function(x) {
 # ui ----
 ui <- page_fluid(
   rclipboardSetup(),
-  theme = bs_theme(),
+  theme = bs_theme(version = 5),
   tags$style(".btn-left {margin-left: 15px}"),
   title = "Writing in APA Style, 7th Edition with Quarto",
   h1("APAQUARTO: A Quarto Extension for Writing in APA Style"),
@@ -72,7 +72,10 @@ ui <- page_fluid(
         ),
         checkboxInput(
           "numbered-lines",
-          label = "Numbered lines (not available in .html format)",
+          label = tooltip(
+            trigger = list("Numbered lines", bs_icon("info-circle")),
+            "Not available in .html format"
+          ),
           value = FALSE,
           width = "100%"
         ),
@@ -80,32 +83,13 @@ ui <- page_fluid(
           "no-ampersand-parenthetical",
           label = tooltip(
             trigger = list(
-              "Use \"and\" (or its replacement word) in parenthetical citations (e.g., Schneider and McGrew, 2018).",
+              "Use \"and\" in parenthetical citations.",
               bs_icon("info-circle")
             ),
-            "The default is leave this box unchecked. Checking this box makes non-standard APA citations."
+            "If checked, the word \"and\" (or its replacement value in the language options) will appear in parenthetical citions. For example, (Schneider and McGrew, 2018) instead of (Schneider & McGrew, 2018). For standard APA citations, leave this box unchecked."
           ),
           value = FALSE,
           width = "100%"
-        ),
-        checkboxInput(
-          "mask",
-          label = "Mask authors",
-          value = FALSE,
-          width = "100%"
-        ),
-        selectizeInput(
-          inputId = "masked-citations",
-          label = "A list of citation keys that should be masked if `mask` is `true`. Enter each key.",
-          width = "100%",
-          multiple = TRUE,
-          choices = character(0),
-          selected = NULL,
-          options = list(
-            'plugins' = list('remove_button'),
-            'create' = TRUE,
-            'persist' = TRUE
-          )
         ),
         selectizeInput(
           inputId = "bibiography",
@@ -123,10 +107,32 @@ ui <- page_fluid(
             'persist' = TRUE
           )
         ),
+        checkboxInput(
+          "mask",
+          label = tooltip(
+            trigger = list("Mask authors", bs_icon("info-circle")),
+            "If checked, omits title page and masks any citations listed in box below."
+          ),
+          value = FALSE,
+          width = "100%"
+        ),
+        selectizeInput(
+          inputId = "masked-citations",
+          label = "A list of citation keys that should be masked if `mask` is checked. Enter each key.",
+          width = "100%",
+          multiple = TRUE,
+          choices = character(0),
+          selected = NULL,
+          options = list(
+            'plugins' = list('remove_button'),
+            'create' = TRUE,
+            'persist' = TRUE
+          )
+        ),
         selectizeInput(
           inputId = "nocite",
           label = tooltip(
-            trigger = list("List of uncited references", bs_icon("info-circle")),
+            trigger = list("List of reference-only citations", bs_icon("info-circle")),
             "If meta-analysis is checked, these references will be treated as meta-analytic citations."
           ),
           width = "100%",
@@ -142,7 +148,7 @@ ui <- page_fluid(
         checkboxInput(
           "meta-analysis",
           label = span(
-            "All uncited references in will be treated as meta-analytic citations."
+            "All references listed above will be treated as meta-analytic citations."
           ),
           value = TRUE,
           width = "100%"
@@ -205,27 +211,111 @@ ui <- page_fluid(
         )
       ),
       panel(
-        heading = "Word (.docx) and Typst (.pdf)",
+        heading = "Format-Specific Options",
         status = "primary",
-        numericInput(
-          "blank-lines-above-title",
-          label = "Number of blank lines above title",
-          value = 2,
-          width = "100%",
-          min = 0
-        ),
-        numericInput(
-          "blank-lines-above-author-note",
-          label = "Lines between Author Names and Author Notes",
-          value = 2,
-          min = 0,
-          width = "100%"
-        )
-      ),
-      panel(heading = "Typst (.pdf)",
-            status = "primary",
-            checkboxInput("list-of-figures", label = "List of Figures", width = "100%"),
-            checkboxInput("list-of-tables", label = "List of Table", width = "100%")),
+        tags$div(width = "100%", class = "container p-0 m-0",
+          tags$div(class = "row align-items-center border-bottom py-1, px-0", 
+            tags$div(tags$strong("Option"), class = "col-5"),
+            tags$div(class = "col-3"),
+            tags$div(tags$strong("Word"), 
+                    class = "col-1 text-center p-0"), 
+            tags$div(tags$strong("Web"), 
+                     class = "col-1 text-center p-0"), 
+            tags$div(tags$strong("LaTeX"), 
+                    class = "text-center", 
+                    class = "col-1 text-center p-0"), 
+            tags$div(tags$strong("Typst"), 
+                    class = "col-1 text-center p-0")),
+          tags$div(class = "row align-items-center border-bottom p-1",
+                   tags$div("Font Size", class = "col-5"),
+                   tags$div(class = "col-3",
+                            radioButtons(
+                              inline = TRUE,
+                              "fontsize",
+                              label = NULL,
+                              choices = c(`10` = "10pt", `11` = "11pt", `12` = "12pt"),
+                              selected = "12pt",
+                              width = "100%"
+                            )
+                   ),
+                   tags$div("", class = "col-1 text-center"),
+                   tags$div(icon("check"), class = "col-1 text-center"),
+                   tags$div(icon("check"), class = "col-1 text-center"),
+                   tags$div(icon("check"), class = "col-1 text-center")),
+          tags$div(class = "row align-items-center border-bottom p-1",
+                   tags$div("Paper size", class = "col-5"),
+                   tags$div(class = "col-3",
+                            radioButtons(
+                              inline = TRUE,
+                              "a4paper",
+                              label = NULL,
+                              choices = c(
+                                `8.5 × 11in` = FALSE,
+                                `A4` = TRUE
+                              ),
+                              selected = FALSE,
+                              width = "100%"
+                            )
+                   ),
+                   tags$div("", class = "col-1 text-center"),
+                   tags$div("", class = "col-1 text-center"),
+                   tags$div(icon("check"), class = "col-1 text-center"),
+                   tags$div(icon("check"), class = "col-1 text-center")),
+          tags$div(class = "row align-items-center border-bottom p-1", 
+            tags$div("Number of blank lines above title",  class = "col-5"),
+            tags$div(numericInput(
+              "blank-lines-above-title",
+              label = NULL,
+              value = 2,
+              min = 0,
+              width = "75px"
+            ),  
+            class = "col-3"),
+            tags$div(icon("check"), class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center")),
+          tags$div(class = "row align-items-center border-bottom p-1", 
+            tags$div("Lines between Author Names and Notes", 
+                     class = "col-5"),
+            tags$div(
+              numericInput(
+              "blank-lines-above-author-note",
+              label = NULL,
+              value = 2,
+              min = 0,
+              width = "75px"
+            ), 
+            class = "col-3"),
+            tags$div(icon("check"), 
+                     class = "col-1 border-primary text-center"),
+            tags$div("", class = "col-1 border-primary text-center"),
+            tags$div("", class = "col-1 border-primary text-center"),
+            tags$div(icon("check"), class = "col-1 border-primary text-center")),
+          tags$div(class = "row align-items-center border-bottom p-1", 
+            tags$div("List of Figures", class = "col"),
+            tags$div(class = "col-3", 
+                     style = "vertical-align:middle",
+              checkboxInput(
+                "list-of-figures",
+                label = NULL)
+              ),
+            tags$div("", class = "col-1 text-center"),
+            tags$div("",class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center")),
+          tags$div(class = "row align-items-center border-bottom p-1",
+            tags$div("List of Tables",  class = "col-5"),
+            tags$div(class = "col-3",
+              checkboxInput(
+                "list-of-tables",
+                label = NULL)
+            ),
+            tags$div("", class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center"))
+          )),
       panel(
         heading = "LaTeX (.pdf)",
         status = "primary",
@@ -241,58 +331,41 @@ ui <- page_fluid(
           ),
           selected = "man"
         ),
-        radioButtons(
-          inline = TRUE,
-          "fontsize",
-          label = "Font size",
-          choices = c(`10` = "10pt", `11` = "11pt", `12` = "12pt"),
-          selected = "12pt"
-        ),
-        radioButtons(
-          inline = TRUE,
-          "a4paper",
-          label = "Paper size",
-          choices = c(
-            `U.S. Letter (8.5 inchy by 11 inch)` = FALSE,
-            `A4 (210mm by 297mm` = TRUE
-          ),
-          selected = FALSE
-        ),
         panel(
           heading = "Journal Mode Options",
           textInput(
             "journal",
             "Journal Title",
             width = "100%",
-            placeholder = "Psychological Review"
+            placeholder = "Example: Psychological Review"
           ),
           textInput(
             "volume",
             "Journal Volume (Number and Pages)",
             width = "100%",
-            placeholder = "2024, Vol. 131, No. 2, 10--60"
+            placeholder = "Example: 2024, Vol. 131, No. 2, 10--60"
           ),
           textInput(
             "copyrightnotice",
             "Copyright Year",
             width = "100%",
-            placeholder = "2025"
+            placeholder = "Example: 2025"
           ),
           textInput(
             "copyrighttext",
             "Copyright Text",
             width = "100%",
-            placeholder = "All rights reserved"
+            placeholder = "Example: All rights reserved"
           )
         ),
         panel(
           heading = "Student Paper Options",
-          textInput("course", "Course", width = "100%", placeholder = "Introduction to Statistics (EDUC 5101)"),
+          textInput("course", "Course", width = "100%", placeholder = "Example: Introduction to Statistics (EDUC 5101)"),
           textInput(
             "professor",
             "Professor",
             width = "100%",
-            placeholder = "W. Joel Schneider"
+            placeholder = "Example: W. Joel Schneider"
           ),
           checkboxInput("includeduedate", 
                         "Include due date"),
@@ -301,7 +374,7 @@ ui <- page_fluid(
             "student-note",
             "Student Paper Note",
             width = "100%",
-            placeholder = "Student ID: 12345"
+            placeholder = "Example: Student ID: 12345"
           )
         )
       )
@@ -340,62 +413,62 @@ ui <- page_fluid(
           "affiliation-change",
           label = "Affiliation Change",
           width = "100%",
-          placeholder = "Fred Jones is now at Generic State University."
+          placeholder = "Example: Fred Jones is now at Generic State University."
         ),
         textInput(
           "deceased-note",
           label = "Author Deceased",
           width = "100%",
-          placeholder = "Fred Jones is deceased."
+          placeholder = "Example: Fred Jones is deceased."
         ),
         tags$h3("Disclosures"),
         textInput(
           "study-registration",
           label = "Study Registration",
           width = "100%",
-          placeholder = "This study was registered at ClinicalTrials.gov (Identifier NTC998877)."
+          placeholder = "Example: This study was registered at ClinicalTrials.gov (Identifier NTC998877)."
         ),
         textInput(
           "data-sharing",
           label = "Data Sharing",
           width = "100%",
-          placeholder = "Data from this study can be accessed at https://academicdata.org/jones2024."
+          placeholder = "Example: Data from this study can be accessed at https://academicdata.org/jones2024."
         ),
         textInput(
           "related-report",
           label = "Related Report",
           width = "100%",
-          placeholder = "This article is based on the dissertation completed by Jones (2018)"
+          placeholder = "Example: This article is based on the dissertation completed by Jones (2018)"
         ),
         textInput(
           "conflict-of-interest",
           label = "Conflict of Interest",
           width = "100%",
-          placeholder = "Fred Jones has been a paid consultant for Corporation X, which funded this study."
+          placeholder = "Example: Fred Jones has been a paid consultant for Corporation X, which funded this study."
         ),
         textInput(
           "financial-support",
           label = "Financial Support",
           width = "100%",
-          placeholder = "This study was supported by Grant 123 from Academic Funders United."
+          placeholder = "Example: This study was supported by Grant 123 from Academic Funders United."
         ),
         textInput(
           "gratitude",
           label = "Gratitude/Acknowledgements",
           width = "100%",
-          placeholder = "The authors are grateful to Sidney Fiero for thoughtful comments on an early draft of this paper."
+          placeholder = "Example: The authors are grateful to Sidney Fiero for thoughtful comments on an early draft of this paper."
         ),
         textInput(
           "author-agreements",
           label = "Authorships Agreements",
           width = "100%",
-          placeholder = "Because the authors are equal contributors, order of authorship was determined by a fair coin toss."
+          placeholder = "Example: Because the authors are equal contributors, order of authorship was determined by a fair coin toss."
         ),
         textInput(
           "correspondence-note",
           label = "Custom Correspondence Note",
           width = "100%",
-          placeholder = "Any text here will override the correspondence note that would otherwise be generated automatically."
+          placeholder = "Example: Any text here will override the correspondence note that would otherwise be generated automatically."
         )
         
       )
@@ -433,7 +506,10 @@ ui <- page_fluid(
             'persist' = TRUE
           )
         ),
-        checkboxInput("word-count", label = "Word Count")
+        checkboxInput("word-count", label = tooltip(
+          trigger = list("Word Count", bs_icon("info-circle")),
+          "This option is available as a convenience. Strict APA style does not include a word count."
+        ))
         
       )
     ),
@@ -474,43 +550,43 @@ ui <- page_fluid(
         textInput(
           "citation-last-author-separator",
           "Separator for the last author in narrative citations. For example, Smith, Davis, and Jones (2025)",
-          placeholder = "and",
+          placeholder = "Default: and",
           width = "100%"
         ),
         textInput(
           "citation-masked-author",
           "Replacement phrase for masked citations",
-          placeholder = "Masked Citation",
+          placeholder = "Default:  Masked Citation",
           width = "100%"
         ),
         textInput(
           "citation-masked-date",
           "Replacement phrase for date in masked citations",
-          placeholder = "n.d.",
+          placeholder = "Default: n.d.",
           width = "100%"
         ),
         textInput(
           "title-block-author-note",
           "The heading of the author note",
-          placeholder = "Author Note",
+          placeholder = "Default: Author Note",
           width = "100%"
         ),
         textInput(
           "title-block-correspondence-note",
           "Correspondence introduction",
-          placeholder = "Correspondence concerning this article should be addressed to",
+          placeholder = "Default: Correspondence concerning this article should be addressed to",
           width = "100%"
         ),
         textInput(
           "title-block-role-introduction",
           "The phrase introducing the author roles",
-          placeholder = "Author roles were classified using the Contributor Role Taxonomy (CRediT; https://credit.niso.org/) as follows:",
+          placeholder = "Default: Author roles were classified using the Contributor Role Taxonomy (CRediT; https://credit.niso.org/) as follows:",
           width = "100%"
         ),
         textInput(
           "title-impact-statement",
           "Impact statement heading",
-          placeholder = "Impact Statement",
+          placeholder = "Default: Impact Statement",
           width = "100%"
         ),
         textInput(
@@ -519,13 +595,13 @@ ui <- page_fluid(
             "The phrase before the word count when",
             tags$code("word-count: true")
           ),
-          placeholder = "Word Count",
+          placeholder = "Default: Word Count",
           width = "100%"
         ),
         textInput(
           "references-meta-analysis",
           "Explanation for meta-analytic explanations",
-          placeholder = "References marked with an asterisk indicate studies included in the meta-analysis.",
+          placeholder = "Default: References marked with an asterisk indicate studies included in the meta-analysis.",
           width = "100%"
         )
       )
