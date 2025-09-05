@@ -633,6 +633,11 @@ ui <- page_fluid(
       panel(
         heading = "Make Document",
         status = "primary",
+        tags$ol(tags$li(span("In your project folder, install apaquarto "), a("(Instructions here).", href = "https://wjschne.github.io/apaquarto/installation.html")),
+                tags$li("Create an empty .qmd file."),
+                tags$li("Click Update button below."),
+                tags$li("Paste resulting code into your .qmd file."),
+                tags$li("Write a great paper!")),
         actionButton("btnmakedocument", label = "Update", class = "mb-2"),
         br(),
         uiOutput("makedocument")
