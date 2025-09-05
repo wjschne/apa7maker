@@ -1041,6 +1041,10 @@ server <- function(input, output, session) {
           `nocite` = nocite
         )
         
+        if (length(doc_list$title) == 0) {
+          doc_list$title <- "My Title"
+        }
+        
         if (!all(is.na(author_yaml))) {
           l_author <- list(author = author_yaml[[1]])
           doc_list <- append(doc_list, l_author, after = 2)
