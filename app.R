@@ -1,3 +1,4 @@
+library(conflicted)
 library(toastui)
 library(shiny)
 library(dplyr)
@@ -13,6 +14,8 @@ library(rclipboard)
 library(readr)
 library(snakecase)
 library(tibble)
+conflict_prefer("page", "bslib", "utils")
+conflict_prefer_all("dplyr", c("base", "stats"))
 # set_grid_theme(
 #   row.even.background = "#ddebf7",
 #   cell.normal.border = "#9bc2e6",
