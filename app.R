@@ -634,7 +634,6 @@ ui <- page_fluid(
         heading = "Make Document",
         status = "primary",
         actionButton("btnmakedocument", label = "Update", class = "mb-2"),
-        downloadButton("downloadData", "Download", class = "mb-2"),
         br(),
         uiOutput("makedocument")
       )
@@ -953,6 +952,7 @@ server <- function(input, output, session) {
       if (nrow(d_author_current) > 0) {
         d_author_current$rowKey <- NULL
         author_yaml <- d_author_current |>
+          mutate(author_name = ifelse(is.na(author_name), "Firstname Middlename Lastname", author_name)) |> 
           pivot_longer(starts_with("role"), names_to = "role") |>
           mutate(role = str_remove(role, "role_")) |>
           nest(.by = -c(role, value), .key = "role") |>
@@ -1218,16 +1218,7 @@ server <- function(input, output, session) {
 
           
         
-        output$downloadData <- downloadHandler(filename = function() {
-          "mydocument.qmd"
-        } ,
-        content = function(file) {
-          cat(r_yaml(), file = file)
-        }, contentType = "text/plain")
-    
-    
-    
-    
+
     
   })
   
