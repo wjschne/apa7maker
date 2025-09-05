@@ -14,8 +14,23 @@ library(rclipboard)
 library(readr)
 library(snakecase)
 library(tibble)
-conflict_prefer("page", "bslib", "utils")
-conflict_prefer_all("dplyr", c("base", "stats"))
+library(fresh)
+mytheme <- create_theme(
+  theme = "default",
+  bs_vars_button(
+    default_color = "#FFF",
+    default_bg = "#112446",
+    default_border = "#112446",
+    border_radius_base = "15px"
+  ),
+  bs_vars_wells(
+    bg = "#FFF",
+    border = "#112446"
+  )
+)
+
+conflict_prefer("page", "bslib", "utils", quiet = TRUE)
+conflict_prefer_all("dplyr", c("base", "stats"), quiet = TRUE)
 # set_grid_theme(
 #   row.even.background = "#ddebf7",
 #   cell.normal.border = "#9bc2e6",
@@ -41,8 +56,11 @@ ifempty <- function(x) {
 
 # ui ----
 ui <- page_fluid(
+  # header = tagList(
+  #   use_theme(mytheme)
+  # ),
   rclipboardSetup(),
-  theme = bs_theme(version = 5),
+  # theme = bs_theme(version = 5),
   tags$style(".btn-left {margin-left: 15px}"),
   title = "Writing in APA Style, 7th Edition with Quarto",
   h1("APAQUARTO: A Quarto Extension for Writing in APA Style"),
@@ -1221,5 +1239,4 @@ server <- function(input, output, session) {
   
 }
 
-if (interactive())
-  shinyApp(ui, server)
+shinyApp(ui, server)

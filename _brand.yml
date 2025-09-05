@@ -14,8 +14,3 @@ color:
   primary: blue
   danger: pink
 
-typography:
-  fonts:
-    - family: Nunito
-      source: google
-  base: Nunito
