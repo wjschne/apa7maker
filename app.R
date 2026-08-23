@@ -47,14 +47,18 @@ conflict_prefer_all("dplyr", c("base", "stats"), quiet = TRUE)
 #   cell.focused.border = "#2679ab",
 # )
 ifempty <- function(x) {
-  if (is.null(x))
+  if (is.null(x)) {
     return(NULL)
-  if (x == is.na(x))
+  }
+  if (x == is.na(x)) {
     return(NULL)
-  if (length(x) == 0)
+  }
+  if (length(x) == 0) {
     return(NULL)
-  if (x == "")
+  }
+  if (x == "") {
     return(NULL)
+  }
   x
 }
 
@@ -79,8 +83,8 @@ ui <- page_fluid(
       panel(
         heading = "Title and Authors",
         status = "primary",
-        
-        textInput("title", label = "Title", width = "100%") ,
+
+        textInput("title", label = "Title", width = "100%"),
         textInput(
           "shorttitle",
           tooltip(
@@ -89,21 +93,23 @@ ui <- page_fluid(
           ),
           width = "100%"
         ),
-
       ),
       ## authors ----
       panel(
         heading = "Authors and Affiliations",
         status = "primary",
-        tags$h3("Authors(s)"),
-        fluidRow(column(width = 12, datagridOutput2("gd_author", height = "auto"))),
-        actionButton(inputId = "addAuthor", label = "Add Author"),
-        
-        tags$h3("Affiliation(s)", style = "margin-top: 12px"),
-        
-        
+        tags$h3("Author(s)"),
         fluidRow(column(
-          width = 12, datagridOutput2("gd_affiliation", height = "auto")
+          width = 12,
+          datagridOutput2("gd_author", height = "auto")
+        )),
+        actionButton(inputId = "addAuthor", label = "Add Author"),
+
+        tags$h3("Affiliation(s)", style = "margin-top: 12px"),
+
+        fluidRow(column(
+          width = 12,
+          datagridOutput2("gd_affiliation", height = "auto")
         )),
         actionButton(inputId = "addAffiliation", label = "Add Affiliation"),
         p(
@@ -176,7 +182,6 @@ ui <- page_fluid(
           width = "100%",
           placeholder = "Example: Any text here will override the correspondence note that would otherwise be generated automatically."
         )
-        
       )
     ),
     ## Formats ----
@@ -271,7 +276,10 @@ ui <- page_fluid(
         selectizeInput(
           inputId = "nocite",
           label = tooltip(
-            trigger = list("List of reference-only citations", bs_icon("info-circle")),
+            trigger = list(
+              "List of reference-only citations",
+              bs_icon("info-circle")
+            ),
             "If meta-analysis is checked, these references will be treated as meta-analytic citations."
           ),
           width = "100%",
@@ -296,109 +304,132 @@ ui <- page_fluid(
       panel(
         heading = "Format-Specific Options",
         status = "primary",
-        tags$div(width = "100%", class = "container p-0 m-0",
-          tags$div(class = "row align-items-center border-bottom py-1, px-0", 
+        tags$div(
+          width = "100%",
+          class = "container p-0 m-0",
+          tags$div(
+            class = "row align-items-center border-bottom py-1, px-0",
             tags$div(tags$strong("Option"), class = "col-5"),
             tags$div(class = "col-3"),
-            tags$div(tags$strong("Word"), 
-                    class = "col-1 text-center p-0"), 
-            tags$div(tags$strong("Web"), 
-                     class = "col-1 text-center p-0"), 
-            tags$div(tags$strong("LaTeX"), 
-                    class = "text-center", 
-                    class = "col-1 text-center p-0"), 
-            tags$div(tags$strong("Typst"), 
-                    class = "col-1 text-center p-0")),
-          tags$div(class = "row align-items-center border-bottom p-1",
-                   tags$div("Font Size", class = "col-5"),
-                   tags$div(class = "col-3",
-                            radioButtons(
-                              inline = TRUE,
-                              "fontsize",
-                              label = NULL,
-                              choices = c(`10` = "10pt", `11` = "11pt", `12` = "12pt"),
-                              selected = "12pt",
-                              width = "100%"
-                            )
-                   ),
-                   tags$div("", class = "col-1 text-center"),
-                   tags$div(icon("check"), class = "col-1 text-center"),
-                   tags$div(icon("check"), class = "col-1 text-center"),
-                   tags$div(icon("check"), class = "col-1 text-center")),
-          tags$div(class = "row align-items-center border-bottom p-1",
-                   tags$div("Paper size", class = "col-5"),
-                   tags$div(class = "col-3",
-                            radioButtons(
-                              inline = TRUE,
-                              "a4paper",
-                              label = NULL,
-                              choices = c(
-                                `8.5 × 11in` = FALSE,
-                                `A4` = TRUE
-                              ),
-                              selected = FALSE,
-                              width = "100%"
-                            )
-                   ),
-                   tags$div("", class = "col-1 text-center"),
-                   tags$div("", class = "col-1 text-center"),
-                   tags$div(icon("check"), class = "col-1 text-center"),
-                   tags$div(icon("check"), class = "col-1 text-center")),
-          tags$div(class = "row align-items-center border-bottom p-1", 
-            tags$div("Number of blank lines above title",  class = "col-5"),
-            tags$div(numericInput(
-              "blank-lines-above-title",
-              label = NULL,
-              value = 2,
-              min = 0,
-              width = "75px"
-            ),  
-            class = "col-3"),
+            tags$div(tags$strong("Word"), class = "col-1 text-center p-0"),
+            tags$div(tags$strong("Web"), class = "col-1 text-center p-0"),
+            tags$div(
+              tags$strong("LaTeX"),
+              class = "text-center",
+              class = "col-1 text-center p-0"
+            ),
+            tags$div(tags$strong("Typst"), class = "col-1 text-center p-0")
+          ),
+          tags$div(
+            class = "row align-items-center border-bottom p-1",
+            tags$div("Font Size", class = "col-5"),
+            tags$div(
+              class = "col-3",
+              radioButtons(
+                inline = TRUE,
+                "fontsize",
+                label = NULL,
+                choices = c(`10` = "10pt", `11` = "11pt", `12` = "12pt"),
+                selected = "12pt",
+                width = "100%"
+              )
+            ),
+            tags$div("", class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center")
+          ),
+          tags$div(
+            class = "row align-items-center border-bottom p-1",
+            tags$div("Paper size", class = "col-5"),
+            tags$div(
+              class = "col-3",
+              radioButtons(
+                inline = TRUE,
+                "a4paper",
+                label = NULL,
+                choices = c(
+                  `8.5 × 11in` = FALSE,
+                  `A4` = TRUE
+                ),
+                selected = FALSE,
+                width = "100%"
+              )
+            ),
+            tags$div("", class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center")
+          ),
+          tags$div(
+            class = "row align-items-center border-bottom p-1",
+            tags$div("Number of blank lines above title", class = "col-5"),
+            tags$div(
+              numericInput(
+                "blank-lines-above-title",
+                label = NULL,
+                value = 2,
+                min = 0,
+                width = "75px"
+              ),
+              class = "col-3"
+            ),
             tags$div(icon("check"), class = "col-1 text-center"),
             tags$div("", class = "col-1 text-center"),
             tags$div("", class = "col-1 text-center"),
-            tags$div(icon("check"), class = "col-1 text-center")),
-          tags$div(class = "row align-items-center border-bottom p-1", 
-            tags$div("Lines between Author Names and Notes", 
-                     class = "col-5"),
+            tags$div(icon("check"), class = "col-1 text-center")
+          ),
+          tags$div(
+            class = "row align-items-center border-bottom p-1",
+            tags$div("Lines between Author Names and Notes", class = "col-5"),
             tags$div(
               numericInput(
-              "blank-lines-above-author-note",
-              label = NULL,
-              value = 2,
-              min = 0,
-              width = "75px"
-            ), 
-            class = "col-3"),
-            tags$div(icon("check"), 
-                     class = "col-1 border-primary text-center"),
+                "blank-lines-above-author-note",
+                label = NULL,
+                value = 2,
+                min = 0,
+                width = "75px"
+              ),
+              class = "col-3"
+            ),
+            tags$div(icon("check"), class = "col-1 border-primary text-center"),
             tags$div("", class = "col-1 border-primary text-center"),
             tags$div("", class = "col-1 border-primary text-center"),
-            tags$div(icon("check"), class = "col-1 border-primary text-center")),
-          tags$div(class = "row align-items-center border-bottom p-1", 
+            tags$div(icon("check"), class = "col-1 border-primary text-center")
+          ),
+          tags$div(
+            class = "row align-items-center border-bottom p-1",
             tags$div("List of Figures", class = "col"),
-            tags$div(class = "col-3", 
-                     style = "vertical-align:middle",
+            tags$div(
+              class = "col-3",
+              style = "vertical-align:middle",
               checkboxInput(
                 "list-of-figures",
-                label = NULL)
-              ),
-            tags$div("", class = "col-1 text-center"),
-            tags$div("",class = "col-1 text-center"),
-            tags$div("", class = "col-1 text-center"),
-            tags$div(icon("check"), class = "col-1 text-center")),
-          tags$div(class = "row align-items-center border-bottom p-1",
-            tags$div("List of Tables",  class = "col-5"),
-            tags$div(class = "col-3",
-              checkboxInput(
-                "list-of-tables",
-                label = NULL)
+                label = NULL
+              )
             ),
             tags$div("", class = "col-1 text-center"),
             tags$div("", class = "col-1 text-center"),
             tags$div("", class = "col-1 text-center"),
-            tags$div(icon("check"), class = "col-1 text-center"))
-          )),
+            tags$div(icon("check"), class = "col-1 text-center")
+          ),
+          tags$div(
+            class = "row align-items-center border-bottom p-1",
+            tags$div("List of Tables", class = "col-5"),
+            tags$div(
+              class = "col-3",
+              checkboxInput(
+                "list-of-tables",
+                label = NULL
+              )
+            ),
+            tags$div("", class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div("", class = "col-1 text-center"),
+            tags$div(icon("check"), class = "col-1 text-center")
+          )
+        )
+      ),
       panel(
         heading = "LaTeX (.pdf)",
         status = "primary",
@@ -443,16 +474,25 @@ ui <- page_fluid(
         ),
         panel(
           heading = "Student Paper Options",
-          textInput("course", "Course", width = "100%", placeholder = "Example: Introduction to Statistics (EDUC 5101)"),
+          textInput(
+            "course",
+            "Course",
+            width = "100%",
+            placeholder = "Example: Introduction to Statistics (EDUC 5101)"
+          ),
           textInput(
             "professor",
             "Professor",
             width = "100%",
             placeholder = "Example: W. Joel Schneider"
           ),
-          checkboxInput("includeduedate", 
-                        "Include due date"),
-          dateInput("duedate", "Due Date", width = "100%", format = "yyyy-mm-dd"),
+          checkboxInput("includeduedate", "Include due date"),
+          dateInput(
+            "duedate",
+            "Due Date",
+            width = "100%",
+            format = "yyyy-mm-dd"
+          ),
           textInput(
             "student-note",
             "Student Paper Note",
@@ -471,7 +511,7 @@ ui <- page_fluid(
               `Title Page Number` = "suppress-title-page-number",
               Title = "suppress-title",
               `Short Title` = "suppress-short-title",
-              `Title in Introduction`  = "suppress-title-introduction",
+              `Title in Introduction` = "suppress-title-introduction",
               Author = "suppress-author",
               Affiliation = "suppress-affiliation",
               `Author Note` = "suppress-author-note",
@@ -489,13 +529,12 @@ ui <- page_fluid(
               `Corresponding Postal Code` = "suppress-corresponding-postal-code",
               `Corresponding Email` = "suppress-corresponding-email",
               `Abstract` = "suppress-abstract",
-              `Impact Statement`  = "suppress-impact-statement",
+              `Impact Statement` = "suppress-impact-statement",
               `Keywords` = "suppress-keywords"
             )
           )
         )
       )
-      
     ),
     ## abstract ----
     nav_panel(
@@ -530,11 +569,13 @@ ui <- page_fluid(
             'persist' = TRUE
           )
         ),
-        checkboxInput("word-count", label = tooltip(
-          trigger = list("Word Count", bs_icon("info-circle")),
-          "This option is available as a convenience. Strict APA style does not include a word count."
-        ))
-        
+        checkboxInput(
+          "word-count",
+          label = tooltip(
+            trigger = list("Word Count", bs_icon("info-circle")),
+            "This option is available as a convenience. Strict APA style does not include a word count."
+          )
+        )
       )
     ),
     ## language ----
@@ -547,7 +588,10 @@ ui <- page_fluid(
           inputId = "lang",
           label = span(
             "Primary Language ",
-            tags$a("(More information)", href = "https://quarto.org/docs/authoring/language.html")
+            tags$a(
+              "(More information)",
+              href = "https://quarto.org/docs/authoring/language.html"
+            )
           ),
           choices = c(
             Chinese = 'zh',
@@ -569,7 +613,10 @@ ui <- page_fluid(
         ),
         h3("Options Specific to apaquarto"),
         p(
-          a("More information", href = "https://wjschne.github.io/apaquarto/options.html#language-options")
+          a(
+            "More information",
+            href = "https://wjschne.github.io/apaquarto/options.html#language-options"
+          )
         ),
         textInput(
           "citation-last-author-separator",
@@ -636,51 +683,52 @@ ui <- page_fluid(
       panel(
         heading = "Make Document",
         status = "primary",
-        tags$ol(tags$li(tags$span("In your project folder, install apaquarto "), tags$a("(Instructions here).", href = "https://wjschne.github.io/apaquarto/installation.html")),
-                tags$li("Create an empty .qmd file."),
-                tags$li("Click Update button below."),
-                tags$li("Paste resulting code into your .qmd file."),
-                tags$li("Write a great paper!")),
+        tags$ol(
+          tags$li(
+            tags$span("In your project folder, install apaquarto "),
+            tags$a(
+              "(Instructions here).",
+              href = "https://wjschne.github.io/apaquarto/installation.html"
+            )
+          ),
+          tags$li("Create an empty .qmd file."),
+          tags$li("Click Update button below."),
+          tags$li("Paste resulting code into your .qmd file."),
+          tags$li("Write a great paper!")
+        ),
         actionButton("btnmakedocument", label = "Update", class = "mb-2"),
         tags$br(),
         uiOutput("makedocument")
       )
     )
   )
-  
-  
-  
 )
 # server ----
 server <- function(input, output, session) {
   d_author <- read_csv("author.csv", col_types = "icccllcccccccccccccc")
-  
+
   d_affiliation <- read_csv("affiliation.csv", col_types = "iiccccccccc")
-  
+
   cnames <- colnames(d_author) |>
     str_remove_all("^author_") |>
     str_remove_all("^role_") |>
     to_title_case()
   cnames[cnames == "Orcid"] <- "ORCID"
   cnames[cnames == "Id"] <- "Delete"
-  
+
   anames <- colnames(d_affiliation) |>
     str_remove_all("^affiliation_") |>
     str_remove_all("^role_") |>
     to_title_case()
-  
+
   anames[anames == "Url"] <- "URL"
   anames[anames == "Id"] <- "Delete"
-  
+
   author_select <- reactiveVal(1)
   r_affiliation_current <- reactiveVal(d_affiliation)
   r_affiliation <- reactiveVal(d_affiliation)
   r_yaml <- reactiveVal("")
-  
-  
 
-  
-  
   # gd_author ----
   output$gd_author <- renderDatagrid2({
     datagrid(
@@ -773,7 +821,7 @@ server <- function(input, output, session) {
         )
       )
   })
-  
+
   # gd_affiliation ----
   output$gd_affiliation <- renderDatagrid2(
     datagrid(
@@ -802,32 +850,38 @@ server <- function(input, output, session) {
       grid_editor(column = "affiliation_url", type = "text") |>
       grid_click("affiliation_click")
   )
-  
-  
+
   author_row <- function(i) {
     current_author_id = NA
     d_author_current <- input$gd_author_data
     if (length(d_author_current) == 0) {
       return(NULL)
     }
-    if (is.null(d_author_current))
+    if (is.null(d_author_current)) {
       d_author_current <- d_author
-    
+    }
+
     if (!is.null(i)) {
       if (i > 0 & nrow(d_author_current) > 0) {
         new_author_id <- d_author_current[i, "author_id", drop = TRUE]
-        
+
         if (!all(i == author_select())) {
           d_affiliation_current <- input$gd_affiliation_data
           if (is.data.frame(d_affiliation_current)) {
             d_affiliation_current <- d_affiliation_current |>
               select(-rowKey) |>
               mutate(across(affiliation_name:affiliation_url, as.character))
-            current_author_id <- input$gd_author_data[author_select(), "author_id", drop = TRUE]
+            current_author_id <- input$gd_author_data[
+              author_select(),
+              "author_id",
+              drop = TRUE
+            ]
           }
-          
-          if (!is.na(current_author_id) &
-              is.data.frame(d_affiliation_current)) {
+
+          if (
+            !is.na(current_author_id) &
+              is.data.frame(d_affiliation_current)
+          ) {
             if (nrow(d_affiliation_current) > 0) {
               r_affiliation(
                 r_affiliation() |>
@@ -835,22 +889,19 @@ server <- function(input, output, session) {
                   filter(author_id != current_author_id) |>
                   bind_rows(unique(d_affiliation_current))
               )
-              
             }
-            
           }
-          
-          
         }
-        r_affiliation_current(r_affiliation() |>
-                                filter(author_id == new_author_id) |>
-                                unique())
-        
+        r_affiliation_current(
+          r_affiliation() |>
+            filter(author_id == new_author_id) |>
+            unique()
+        )
       }
       author_select(i)
     }
   }
-  
+
   # author row ----
   observeEvent(input$author_click, {
     i <- input$author_click$row
@@ -858,21 +909,19 @@ server <- function(input, output, session) {
       author_row(i)
     }
   })
-  
-  
-  
+
   author_n <- reactiveVal(nrow(d_author))
-  
-  
-  
+
   # add author----
   observeEvent(input$addAuthor, {
     if (!adding_author) {
       new_author_id <- author_n() + 1
-      
-      new_affiliation_id <- ifelse(nrow(r_affiliation()) == 0,
-                                   1,
-                                   max(r_affiliation()$affiliation_id) + 1)
+
+      new_affiliation_id <- ifelse(
+        nrow(r_affiliation()) == 0,
+        1,
+        max(r_affiliation()$affiliation_id) + 1
+      )
       new_author <- tibble(
         author_id = new_author_id,
         author_corresponding = FALSE,
@@ -880,30 +929,25 @@ server <- function(input, output, session) {
       ) |>
         bind_rows(d_author |> filter(FALSE)) |>
         mutate(across(starts_with("role_"), \(x) "No"))
-      
-      
-      
+
       d_author <- bind_rows(unique(d_author), unique(new_author))
-      
 
       r_affiliation(bind_rows(
         r_affiliation() |>
           filter(affiliation_id != new_affiliation_id) |>
           unique(),
-        tibble(affiliation_id = new_affiliation_id, author_id = new_author_id) |>
+        tibble(
+          affiliation_id = new_affiliation_id,
+          author_id = new_author_id
+        ) |>
           unique()
       ))
-      
+
       grid_proxy_add_row(proxy = "gd_author", new_author)
       author_n(author_n() + 1)
-      
     }
-    
-    
-    
-    
   })
-  
+
   # delete author----
   observeEvent(input$author_delete, {
     d_author <- d_author |>
@@ -917,525 +961,588 @@ server <- function(input, output, session) {
     r_affiliation(aff)
     r_affiliation_current(r_affiliation() |> filter(FALSE))
   })
-  
+
   # add affiliation----
   observeEvent(input$addAffiliation, {
     d_author_current <- input$gd_author_data
-    
-    if (is.numeric(author_select()) &&
+
+    if (
+      is.numeric(author_select()) &&
         !is.na(author_select()) &&
-        author_select() <= nrow(d_author_current)) {
-      current_author_id <- d_author_current |> slice(author_select()) |> pull(author_id)
-      
+        author_select() <= nrow(d_author_current)
+    ) {
+      current_author_id <- d_author_current |>
+        slice(author_select()) |>
+        pull(author_id)
+
       if (nrow(r_affiliation()) == 0) {
         new_id <- 1
       } else {
         new_id <- max(pull(r_affiliation(), affiliation_id)) + 1L
       }
-      
+
       new_affiliation_row <- bind_rows(
         d_affiliation |> filter(FALSE),
         data.frame(affiliation_id = new_id, author_id = current_author_id)
       )
-      
+
       r_affiliation(bind_rows(r_affiliation(), new_affiliation_row))
       grid_proxy_add_row("gd_affiliation", new_affiliation_row)
     }
-    
   })
-  
-  
+
   # delete affiliation----
   observeEvent(input$affiliation_delete, {
     delete_id <- as.numeric(input$affiliation_delete)
-    r_affiliation(r_affiliation() |>
-                    filter(affiliation_id != delete_id))
-    
-    
+    r_affiliation(
+      r_affiliation() |>
+        filter(affiliation_id != delete_id)
+    )
+
     data = input$gd_affiliation_data
     rowKey <- data$rowKey[data$affiliation_id == delete_id]
     grid_proxy_delete_row(proxy = "gd_affiliation", rowKey)
-    
   })
-  
+
   # make document ----
   observeEvent(input$btnmakedocument, {
     author_row(1)
-    
+
     d_author_current <- input$gd_author_data
-    if (is.null(d_author_current))
+    if (is.null(d_author_current)) {
       d_author_current <- d_author
+    }
     author_yaml <- NA
-    
+
     if (!is.null(d_author_current) & length(d_author_current) > 0) {
       if (nrow(d_author_current) > 0) {
         d_author_current$rowKey <- NULL
         author_yaml <- d_author_current |>
-          mutate(author_name = ifelse(is.na(author_name), "Firstname Middlename Lastname", author_name)) |> 
+          mutate(
+            author_name = ifelse(
+              is.na(author_name),
+              "Firstname Middlename Lastname",
+              author_name
+            )
+          ) |>
           pivot_longer(starts_with("role"), names_to = "role") |>
           mutate(role = str_remove(role, "role_")) |>
           nest(.by = -c(role, value), .key = "role") |>
-          mutate(role = map(role, \(d) {
-            d <- d |>
-              filter(value != "No")
-            if (nrow(d) == 0)
-              return(NA)
-            role_level <- d |>
-              filter(value != "Yes") |>
-              deframe() |>
-              as.list()
-            role <- d |>
-              filter(value == "Yes") |>
-              pull(role) |>
-              as.list()
-            
-            if (length(role_level) > 0) {
-              ll <- map2(names(role_level), role_level, \(n, v) {
-                l <- list(v)
-                names(l) <- n
-                l
-              })
-              role <- append(role, ll)
-            }
-            role
-            
-          })) |>
+          mutate(
+            role = map(role, \(d) {
+              d <- d |>
+                filter(value != "No")
+              if (nrow(d) == 0) {
+                return(NA)
+              }
+              role_level <- d |>
+                filter(value != "Yes") |>
+                deframe() |>
+                as.list()
+              role <- d |>
+                filter(value == "Yes") |>
+                pull(role) |>
+                as.list()
+
+              if (length(role_level) > 0) {
+                ll <- map2(names(role_level), role_level, \(n, v) {
+                  l <- list(v)
+                  names(l) <- n
+                  l
+                })
+                role <- append(role, ll)
+              }
+              role
+            })
+          ) |>
           rename_with(.fn = \(x) str_remove(x, "^author_")) |>
           nest(.by = c(id), .key = "author") |>
-          mutate(author = map2(author, id, \(d, i) {
-            d <- d[, d |> apply(MARGIN = 2, \(x) !all(is.na(x)))]
-            if (all(!d$deceased))
-              d$deceased <- NULL
-            if (all(!d$corresponding))
-              d$corresponding <- NULL
-            x <- as.list(d)
-            if ("role" %in% colnames(d)) {
-              if (!all(is.na(d$role))) {
-                x$role <- d$role[[1]]
+          mutate(
+            author = map2(author, id, \(d, i) {
+              d <- d[, d |> apply(MARGIN = 2, \(x) !all(is.na(x)))]
+              if (all(!d$deceased)) {
+                d$deceased <- NULL
               }
-              
-            }
-            
-            
-            if (nrow(r_affiliation()) > 0) {
-              r_affiliation(rows_update(r_affiliation(), as_tibble(input$gd_affiliation_data) %>% select(-rowKey), by = "affiliation_id"))
-              
-              d_aff <- r_affiliation() |>
-                filter(author_id == i) |>
-                pivot_longer(-c(affiliation_id, author_id)) |>
-                mutate(name = str_remove(name, "^affiliation_")) |>
-                filter(!is.na(value))
-              
-              if (nrow(d_aff) > 0) {
-                l_affiliation <- d_aff |>
-                  pivot_wider() |>
-                  nest(affiliation = -c(affiliation_id, author_id)) |>
-                  mutate(affiliation = map(affiliation, as.list))
-                x$affiliation <- l_affiliation$affiliation
+              if (all(!d$corresponding)) {
+                d$corresponding <- NULL
               }
-            }
-            
-            x
-            
-          })) |>
-          select(-id)
-        }}
-        
-        
-        nocite <- NULL
-        if (length(input$nocite) > 0) {
-          nocite <- lapply(input$nocite, \(x) {
-            if (!str_detect(x, "^\\@"))
-              x <- paste0("@", x)
-            x
-          }) |>
-            paste(collapse = ", ")
-          nocite <- paste0("nocitestart\n", nocite, "\nnociteend")
-          
-        }
-
-        
-        doc_list <- list(
-          title = ifempty(input$title),
-          shorttitle = ifempty(input$shorttitle),
-          bibliography = ifempty(input$bibliography),
-          floatsintext = input$floatsintext,
-          `numbered-lines` = input$`numbered-lines`,
-          mask = input$mask,
-          `no-ampersand-parenthetical` = input$`no-ampersand-parenthetical`,
-          `meta-analysis` = input$`meta-analysis`,
-          `nocite` = nocite
-        )
-        
-        if (length(doc_list$title) == 0) {
-          doc_list$title <- "My Title"
-        }
-        
-        if (!all(is.na(author_yaml))) {
-          l_author <- list(author = author_yaml[[1]])
-          doc_list <- append(doc_list, l_author, after = 2)
-        }
-        
-        
-        if (length(input$suppress) > 0) {
-          l_suppress <- rep(TRUE, length(input$suppress))
-          names(l_suppress) <- input$suppress
-          doc_list <- append(doc_list, l_suppress)
-        }
-        
-        author_note <- list(
-          `status-changes` = list(
-            `affiliation-change` = ifempty(input$`affiliation-change`),
-            deceased = ifempty(input$deceased)
-          ),
-          disclosures = list(
-            `study-registration` = ifempty(input$`study-registration`),
-            `data-sharing` = ifempty(input$`data-sharing`),
-            `related-report` = ifempty(input$`related-report`),
-            `conflict-of-interest` = ifempty(input$`conflict-of-interest`),
-            `financial-support` = ifempty(input$`financial-support`),
-            `gratitude` = ifempty(input$`gratitude`),
-            `authorship-agreements` = ifempty(input$`authorship-agreements`)
-          )
-        )
-        
-        author_note <- lapply(author_note, \(x) {
-          x[lapply(x, length) == 0] <- NULL
-          x
-        })
-        
-        author_note[lapply(author_note, length) == 0] <- NULL
-        
-
-        doc_list <- append(doc_list, list(`author-note` = author_note), after = 3)
-        
-        
-        doc_list <- append(
-          doc_list,
-          list(
-            abstract = ifempty(input$abstract),
-            `impact-statement` = ifempty(input$`impact-statement`),
-            keywords = input$keywords,
-            `word-count` = input$`word-count`
-          ),
-          after = 4
-        )
-        
-        doc_list$lang <- input$lang
-        language <- list()
-        language$`citation-last-author-separator` <- ifempty(input$`citation-last-author-separator`)
-        language$`citation-masked-author` <- ifempty(input$`citation-masked-author`)
-        language$`citation-masked-date` <- ifempty(input$`citation-masked-date`)
-        
-        language$`title-block-author-note` <- ifempty(input$`title-block-author-note`)
-        language$`title-block-correspondence-note` <- ifempty(input$`title-block-correspondence-note`)
-        language$`title-block-correspondence-note` <- ifempty(input$`title-block-role-introduction`)
-        language$`title-impact-statement` <- ifempty(input$`title-impact-statement`)
-        language$`title-word-count` <- ifempty(input$`title-word-count`)
-        language$`references-meta-analysis` <- ifempty(input$`references-meta-analysis`)
-        
-        language[lapply(language, length) == 0] <- NULL
-        if (length(language) > 0 ) {
-          doc_list$language <- language
-        }
-        
-
-        
-        if (length(input$formattype) == 0) {
-          doc_list$format <- list(`apaquarto-html` = list(toc = TRUE))
-        } else {
-          apaformats <- list()
-          if ("apaquarto-html" %in% input$formattype) {
-            apaformats$`apaquarto-html` = list(toc = TRUE)
-          }
-          if ("apaquarto-docx" %in% input$formattype) {
-            doc_list$`blank-lines-above-title` <- ifempty(input$`blank-lines-above-title`)
-            doc_list$`blank-lines-above-author-note` <- ifempty(input$`blank-lines-above-author-note`)
-            apaformats$`apaquarto-docx` = list(toc = FALSE)
-          }
-          if ("apaquarto-typst" %in% input$formattype) {
-            doc_list$`blank-lines-above-title` <- ifempty(input$`blank-lines-above-title`)
-            doc_list$`blank-lines-above-author-note` <- ifempty(input$`blank-lines-above-author-note`)
-            apaformats$`apaquarto-typst` = list(
-              toc = FALSE,
-              `list-of-figures` = input$`list-of-figures`,
-              `list-of-tables` = input$`list-of-tables`
-              )
-          }
-          
-          if ("apaquarto-pdf" %in% input$formattype) {
-            apaformats$`apaquarto-pdf` = list(
-              documentmode = input$documentmode,
-              course = ifempty(input$course),
-              professor = ifempty(input$professor),
-              duedate = as.character(as.Date(input$duedate)),
-              note = ifempty(input$note),
-              journal = ifempty(input$journal),
-              volume = ifempty(input$volume),
-              copyrightnotice = ifempty(input$copyrightnotice),
-              copyrightext = ifempty(input$copyrightext),
-              
-              `keep-tex` = FALSE
-            )
-            if (!input$includeduedate) {
-              apaformats$`apaquarto-pdf`$duedate <- NULL
-            }
-            apaformats$`apaquarto-pdf`[lapply(apaformats$`apaquarto-pdf`, length) == 0] <- NULL
-          }
-          doc_list$format <- apaformats
-          
-          
-          
-        }
-        
-        doc_list[lapply(doc_list, length) == 0] <- NULL
-        
-        doc_yaml <- doc_list |>
-          as.yaml(
-            indent.mapping.sequence = T,
-            handlers = list(
-              logical = function(x) {
-                result <- ifelse(x, "true", "false")
-                class(result) <- "verbatim"
-                return(result)
+              x <- as.list(d)
+              if ("role" %in% colnames(d)) {
+                if (!all(is.na(d$role))) {
+                  x$role <- d$role[[1]]
+                }
               }
-            )
+
+              if (nrow(r_affiliation()) > 0) {
+                r_affiliation(rows_update(
+                  r_affiliation(),
+                  as_tibble(input$gd_affiliation_data) %>% select(-rowKey),
+                  by = "affiliation_id"
+                ))
+
+                d_aff <- r_affiliation() |>
+                  filter(author_id == i) |>
+                  pivot_longer(-c(affiliation_id, author_id)) |>
+                  mutate(name = str_remove(name, "^affiliation_")) |>
+                  filter(!is.na(value))
+
+                if (nrow(d_aff) > 0) {
+                  l_affiliation <- d_aff |>
+                    pivot_wider() |>
+                    nest(affiliation = -c(affiliation_id, author_id)) |>
+                    mutate(affiliation = map(affiliation, as.list))
+                  x$affiliation <- l_affiliation$affiliation
+                }
+              }
+
+              x
+            })
           ) |>
-          gsub(pattern = "'false'", replacement = "false") |>
-          gsub(pattern = "'true'", replacement = "true") |>
-          gsub(pattern = "nocitestart\n", replacement = "") |>
-          gsub(pattern = "\\s{2,}nociteend", replacement = "") |>
-          gsub(pattern = "\\|\\-", replacement = "|")
-        
+          select(-id)
+      }
+    }
 
-        doc_yaml <- paste0(
-          "---\n",
-          trimws(doc_yaml),
-          "\n---\n\n",
-          "<!-- The introduction should not have a level-1 heading such as Introduction. -->\n\n",
-          "## Section in Introduction\n\n",
-          "## Another Section in Introduction\n\n",
-          "# Method\n\n",
-          "## Participants\n\n",
-          "## Measures\n\n",
-          "## Procedure\n\n",
-          "# Results\n\n",
-          "# Discussion\n\n",
-          "## Limitations and Future Directions\n\n",
-          "## Conclusion\n\n",
-          "# References\n\n",
-          "<!-- References will auto-populate in the refs div below -->\n\n",
-          "::: {#refs}\n",
-          ":::\n\n",
-          "# This Section Is an Appendix {#apx-a}\n\n",
-          "# Another Appendix {#apx-b}\n"
+    nocite <- NULL
+    if (length(input$nocite) > 0) {
+      nocite <- lapply(input$nocite, \(x) {
+        if (!str_detect(x, "^\\@")) {
+          x <- paste0("@", x)
+        }
+        x
+      }) |>
+        paste(collapse = ", ")
+      nocite <- paste0("nocitestart\n", nocite, "\nnociteend")
+    }
+
+    doc_list <- list(
+      title = ifempty(input$title),
+      shorttitle = ifempty(input$shorttitle),
+      bibliography = ifempty(input$bibliography),
+      floatsintext = input$floatsintext,
+      `numbered-lines` = input$`numbered-lines`,
+      mask = input$mask,
+      `no-ampersand-parenthetical` = input$`no-ampersand-parenthetical`,
+      `meta-analysis` = input$`meta-analysis`,
+      `nocite` = nocite
+    )
+
+    if (length(doc_list$title) == 0) {
+      doc_list$title <- "My Title"
+    }
+
+    if (!all(is.na(author_yaml))) {
+      l_author <- list(author = author_yaml[[1]])
+      doc_list <- append(doc_list, l_author, after = 2)
+    }
+
+    if (length(input$suppress) > 0) {
+      l_suppress <- rep(TRUE, length(input$suppress))
+      names(l_suppress) <- input$suppress
+      doc_list <- append(doc_list, l_suppress)
+    }
+
+    author_note <- list(
+      `status-changes` = list(
+        `affiliation-change` = ifempty(input$`affiliation-change`),
+        deceased = ifempty(input$deceased)
+      ),
+      disclosures = list(
+        `study-registration` = ifempty(input$`study-registration`),
+        `data-sharing` = ifempty(input$`data-sharing`),
+        `related-report` = ifempty(input$`related-report`),
+        `conflict-of-interest` = ifempty(input$`conflict-of-interest`),
+        `financial-support` = ifempty(input$`financial-support`),
+        `gratitude` = ifempty(input$`gratitude`),
+        `authorship-agreements` = ifempty(input$`authorship-agreements`)
+      )
+    )
+
+    author_note <- lapply(author_note, \(x) {
+      x[lapply(x, length) == 0] <- NULL
+      x
+    })
+
+    author_note[lapply(author_note, length) == 0] <- NULL
+
+    doc_list <- append(doc_list, list(`author-note` = author_note), after = 3)
+
+    doc_list <- append(
+      doc_list,
+      list(
+        abstract = ifempty(input$abstract),
+        `impact-statement` = ifempty(input$`impact-statement`),
+        keywords = input$keywords,
+        `word-count` = input$`word-count`
+      ),
+      after = 4
+    )
+
+    doc_list$lang <- input$lang
+    language <- list()
+    language$`citation-last-author-separator` <- ifempty(
+      input$`citation-last-author-separator`
+    )
+    language$`citation-masked-author` <- ifempty(input$`citation-masked-author`)
+    language$`citation-masked-date` <- ifempty(input$`citation-masked-date`)
+
+    language$`title-block-author-note` <- ifempty(
+      input$`title-block-author-note`
+    )
+    language$`title-block-correspondence-note` <- ifempty(
+      input$`title-block-correspondence-note`
+    )
+    language$`title-block-correspondence-note` <- ifempty(
+      input$`title-block-role-introduction`
+    )
+    language$`title-impact-statement` <- ifempty(input$`title-impact-statement`)
+    language$`title-word-count` <- ifempty(input$`title-word-count`)
+    language$`references-meta-analysis` <- ifempty(
+      input$`references-meta-analysis`
+    )
+
+    language[lapply(language, length) == 0] <- NULL
+    if (length(language) > 0) {
+      doc_list$language <- language
+    }
+
+    if (length(input$formattype) == 0) {
+      doc_list$format <- list(`apaquarto-html` = list(toc = TRUE))
+    } else {
+      apaformats <- list()
+      if ("apaquarto-html" %in% input$formattype) {
+        apaformats$`apaquarto-html` = list(toc = TRUE)
+      }
+      if ("apaquarto-docx" %in% input$formattype) {
+        doc_list$`blank-lines-above-title` <- ifempty(
+          input$`blank-lines-above-title`
         )
-        
-        output$makedocument <- renderUI(
-          tags$div(
-            style = "border: 1px solid #ccc; border-radius: 8px; padding: 10px; background-color: #f9f9f9;",
-            rclipButton(inputId = "copythis",
-              label = "Copy to clipboard",
-              clipText = doc_yaml,
-              icon = icon("clipboard"),
-              class = "mb-2"
-            ),
-            verbatimTextOutput("yaml_output", placeholder = TRUE)
-          )
+        doc_list$`blank-lines-above-author-note` <- ifempty(
+          input$`blank-lines-above-author-note`
         )
-        r_yaml(doc_yaml)
-        output$yaml_output <- renderText(doc_yaml)
-        
+        apaformats$`apaquarto-docx` = list(toc = FALSE)
+      }
+      if ("apaquarto-typst" %in% input$formattype) {
+        doc_list$`blank-lines-above-title` <- ifempty(
+          input$`blank-lines-above-title`
+        )
+        doc_list$`blank-lines-above-author-note` <- ifempty(
+          input$`blank-lines-above-author-note`
+        )
+        apaformats$`apaquarto-typst` = list(
+          toc = FALSE,
+          `list-of-figures` = input$`list-of-figures`,
+          `list-of-tables` = input$`list-of-tables`
+        )
+      }
+
+      if ("apaquarto-pdf" %in% input$formattype) {
+        apaformats$`apaquarto-pdf` = list(
+          documentmode = input$documentmode,
+          course = ifempty(input$course),
+          professor = ifempty(input$professor),
+          duedate = as.character(as.Date(input$duedate)),
+          note = ifempty(input$note),
+          journal = ifempty(input$journal),
+          volume = ifempty(input$volume),
+          copyrightnotice = ifempty(input$copyrightnotice),
+          copyrightext = ifempty(input$copyrightext),
+
+          `keep-tex` = FALSE
+        )
+        if (!input$includeduedate) {
+          apaformats$`apaquarto-pdf`$duedate <- NULL
+        }
+        apaformats$`apaquarto-pdf`[
+          lapply(apaformats$`apaquarto-pdf`, length) == 0
+        ] <- NULL
+      }
+      doc_list$format <- apaformats
+    }
+
+    doc_list[lapply(doc_list, length) == 0] <- NULL
+
+    doc_yaml <- doc_list |>
+      as.yaml(
+        indent.mapping.sequence = T,
+        handlers = list(
+          logical = function(x) {
+            result <- ifelse(x, "true", "false")
+            class(result) <- "verbatim"
+            return(result)
+          }
+        )
+      ) |>
+      gsub(pattern = "'false'", replacement = "false") |>
+      gsub(pattern = "'true'", replacement = "true") |>
+      gsub(pattern = "nocitestart\n", replacement = "") |>
+      gsub(pattern = "\\s{2,}nociteend", replacement = "") |>
+      gsub(pattern = "\\|\\-", replacement = "|")
+
+    doc_yaml <- paste0(
+      "---\n",
+      trimws(doc_yaml),
+      "\n---\n\n",
+      "<!-- The introduction should not have a level-1 heading such as Introduction. -->\n\n",
+      "## Section in Introduction\n\n",
+      "## Another Section in Introduction\n\n",
+      "# Method\n\n",
+      "## Participants\n\n",
+      "## Measures\n\n",
+      "## Procedure\n\n",
+      "# Results\n\n",
+      "# Discussion\n\n",
+      "## Limitations and Future Directions\n\n",
+      "## Conclusion\n\n",
+      "# References\n\n",
+      "<!-- References will auto-populate in the refs div below -->\n\n",
+      "::: {#refs}\n",
+      ":::\n\n",
+      "# This Section Is an Appendix {#apx-a}\n\n",
+      "# Another Appendix {#apx-b}\n"
+    )
+
+    output$makedocument <- renderUI(
+      tags$div(
+        style = "border: 1px solid #ccc; border-radius: 8px; padding: 10px; background-color: #f9f9f9;",
+        rclipButton(
+          inputId = "copythis",
+          label = "Copy to clipboard",
+          clipText = doc_yaml,
+          icon = icon("clipboard"),
+          class = "mb-2"
+        ),
+        verbatimTextOutput("yaml_output", placeholder = TRUE)
+      )
+    )
+    r_yaml(doc_yaml)
+    output$yaml_output <- renderText(doc_yaml)
   })
-  
+
   # import doc ----
   observe({
     req(input$importqmd)
     fm <- rmarkdown::yaml_front_matter(input$importqmd$datapath)
-    
-    
+
     ## text inputs
-    for (fd in c("title", 
-                 "shorttitle", 
-                 "journal",
-                 "volume",
-                 "copyrightnotice",
-                 "copyrighttext",
-                 "course",
-                 "professor",
-                 "student-note",
-                 "affiliation-change",
-                 "deceased-note",
-                 "study-registration",
-                 "data-sharing",
-                 "related-report",
-                 "conflict-of-interest",
-                 "financial-support",
-                 "gratitude",
-                 "author-agreements",
-                 "correspondence-note",
-                 "citation-last-author-separator",
-                 "citation-masked-author",
-                 "citation-masked-date",
-                 "title-block-author-note",
-                 "title-block-correspondence-note",
-                 "title-block-role-introduction",
-                 "title-impact-statement",
-                 "title-word-count",
-                 "references-meta-analysis"
+    for (fd in c(
+      "title",
+      "shorttitle",
+      "journal",
+      "volume",
+      "copyrightnotice",
+      "copyrighttext",
+      "course",
+      "professor",
+      "student-note",
+      "affiliation-change",
+      "deceased-note",
+      "study-registration",
+      "data-sharing",
+      "related-report",
+      "conflict-of-interest",
+      "financial-support",
+      "gratitude",
+      "author-agreements",
+      "correspondence-note",
+      "citation-last-author-separator",
+      "citation-masked-author",
+      "citation-masked-date",
+      "title-block-author-note",
+      "title-block-correspondence-note",
+      "title-block-role-introduction",
+      "title-impact-statement",
+      "title-word-count",
+      "references-meta-analysis"
     )) {
       for (fmt in fm[["format"]]) {
         if (!is.character(fmt)) {
           updateTextInput(session = session, inputId = fd, value = fmt[[fd]])
-        }}
-      
-      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "author-note", fd))
-      
-      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "author-note", "status-changes", fd))
-      
-      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "author-note", "disclosures", fd))
-      
-      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "language", fd))
-      
-      
-      
+        }
+      }
+
+      updateTextInput(
+        session = session,
+        inputId = fd,
+        value = purrr::pluck(fm, "author-note", fd)
+      )
+
+      updateTextInput(
+        session = session,
+        inputId = fd,
+        value = purrr::pluck(fm, "author-note", "status-changes", fd)
+      )
+
+      updateTextInput(
+        session = session,
+        inputId = fd,
+        value = purrr::pluck(fm, "author-note", "disclosures", fd)
+      )
+
+      updateTextInput(
+        session = session,
+        inputId = fd,
+        value = purrr::pluck(fm, "language", fd)
+      )
+
       updateTextInput(session = session, inputId = fd, value = fm[[fd]])
     }
-    
+
     ## text area inputs
     for (fd in c("abstract", "impact-statment")) {
       for (fmt in fm[["format"]]) {
         if (!is.character(fmt)) {
-          updateTextAreaInput(session = session, inputId = fd, value = fmt[[fd]])
-        }}
-      
+          updateTextAreaInput(
+            session = session,
+            inputId = fd,
+            value = fmt[[fd]]
+          )
+        }
+      }
+
       updateTextAreaInput(session = session, inputId = fd, value = fm[[fd]])
     }
-    
+
     ## date inputs
     for (fd in c("duedate")) {
       for (fmt in fm[["format"]]) {
         if (!is.character(fmt)) {
           updateDateInput(session = session, inputId = fd, value = fmt[[fd]])
-        }}
-      
+        }
+      }
+
       updateDateInput(session = session, inputId = fd, value = fm[[fd]])
     }
-    
+
     ## list imputs
-    for (fd in c("bibliography", 
-                 "masked-citations", 
-                 "nocite",
-                 "keywords")) {
-      updateSelectizeInput(session = session, inputId = fd, selected = fm[[fd]], choices = fm[[fd]])
+    for (fd in c("bibliography", "masked-citations", "nocite", "keywords")) {
+      updateSelectizeInput(
+        session = session,
+        inputId = fd,
+        selected = fm[[fd]],
+        choices = fm[[fd]]
+      )
     }
-    
+
     for (fd in c("lang")) {
       updateSelectInput(session = session, inputId = fd, selected = fm[[fd]])
     }
-    
+
     ## checkbox inputs
-    for (fd in c("floatsintext", 
-                 "numbered-lines", 
-                 "no-ampersand-parenthetical", 
-                 "mask",
-                 "meta-analysis",
-                 "list-of-figures",
-                 "list-of-tables",
-                 "includeduedate",
-                 "word-count"
+    for (fd in c(
+      "floatsintext",
+      "numbered-lines",
+      "no-ampersand-parenthetical",
+      "mask",
+      "meta-analysis",
+      "list-of-figures",
+      "list-of-tables",
+      "includeduedate",
+      "word-count"
     )) {
-      
       for (fmt in fm[["format"]]) {
         if (!is.character(fmt)) {
-          updateCheckboxInput(session = session, inputId = fd, value = fmt[[fd]])
-        }}
-      
+          updateCheckboxInput(
+            session = session,
+            inputId = fd,
+            value = fmt[[fd]]
+          )
+        }
+      }
+
       updateCheckboxInput(session = session, inputId = fd, value = fm[[fd]])
     }
-    
+
     ## checkboxgroup
     if (any(stringr::str_starts(names(fm), pattern = "suppress\\-"))) {
-      updateCheckboxGroupInput(session = session, inputId = "suppress", selected  = names(fm)[stringr::str_starts(names(fm), pattern = "suppress\\-")])
+      updateCheckboxGroupInput(
+        session = session,
+        inputId = "suppress",
+        selected = names(fm)[stringr::str_starts(
+          names(fm),
+          pattern = "suppress\\-"
+        )]
+      )
     }
-    
-    updateCheckboxGroupInput(session = session, inputId = "formattype",
-                             selected = names(fm[["format"]]))
-    
-    
+
+    updateCheckboxGroupInput(
+      session = session,
+      inputId = "formattype",
+      selected = names(fm[["format"]])
+    )
+
     ## radio button
     for (fd in c("fontsize", "a4paper", "documentmode")) {
       for (fmt in fm[["format"]]) {
         if (!is.character(fmt)) {
           updateNumericInput(session = session, inputId = fd, value = fmt[[fd]])
-        }}
-      
+        }
+      }
+
       updateRadioButtons(session = session, inputId = fd, selected = fm[[fd]])
     }
-    
+
     ## numeric input
-    
+
     for (fd in c("blank-lines-above-title", "blank-lines-above-author-note")) {
-      
-      
       for (fmt in fm[["format"]]) {
         if (!is.character(fmt)) {
           updateNumericInput(session = session, inputId = fd, value = fmt[[fd]])
         }
-        
-        
-        
       }
-      
+
       updateNumericInput(session = session, inputId = fd, value = fm[[fd]])
-      
     }
-    
- 
-    
-    d_author <<- tibble(author_name = map(fm$author, "name") |> map_chr(\(x) ifelse(is.null(x), "", x)),
-                       author_orcid = map(fm$author, "orcid") |> map_chr(\(x) ifelse(is.null(x), "", x)),
-                       author_email = map(fm$author, "email") |> map_chr(\(x) ifelse(is.null(x), "", x)),
-                       author_corresponding = map(fm$author, "corresponding") |> map_lgl(\(x) ifelse(is.null(x), FALSE, x)),
-                       author_deceased = map(fm$author, "deceased") |> map_lgl(\(x) ifelse(is.null(x), FALSE, x)),
-                       affiliation = map(fm$author, "affiliation"),
-                       role = map(fm$author, "role") |> map_df(\(x) {
-                         d <- tibble::tibble(role_conceptualization = "No",
-                                             role_data_curation = "No",
-                                             role_formal_analysis = "No",
-                                             role_funding_acquisition = "No",
-                                             role_investigation = "No",
-                                             role_methodology = "No",
-                                             role_project_administration = "No",
-                                             role_resources = "No",
-                                             role_software = "No",
-                                             role_supervision = "No",
-                                             role_validation = "No",
-                                             role_visualization = "No",
-                                             role_writing = "No",
-                                             role_editing = "No")
-                         if (!is.null(x)) {
-                           
-                           x_values <- unlist(x)
-                           x_names <- names(x_values)
-                           x_names[x_names == ""] <- x_values[x_names == ""]
-                           names(x_values) <- x_names
-                           x_values[x_values == x_names] <- "Yes"
-                           x_values <- stringr::str_to_title(x_values)
-                           for (i in seq_along(x_values)) {
-                             d[1,paste0("role_", x_names[i])] <- x_values[i]
-                             
-                           }
-                         }
-                         
-                         d
-                         
-                       })) |> 
-      unnest(role) |> 
+
+    d_author <<- tibble(
+      author_name = map(fm$author, "name") |>
+        map_chr(\(x) ifelse(is.null(x), "", x)),
+      author_orcid = map(fm$author, "orcid") |>
+        map_chr(\(x) ifelse(is.null(x), "", x)),
+      author_email = map(fm$author, "email") |>
+        map_chr(\(x) ifelse(is.null(x), "", x)),
+      author_corresponding = map(fm$author, "corresponding") |>
+        map_lgl(\(x) ifelse(is.null(x), FALSE, x)),
+      author_deceased = map(fm$author, "deceased") |>
+        map_lgl(\(x) ifelse(is.null(x), FALSE, x)),
+      affiliation = map(fm$author, "affiliation"),
+      role = map(fm$author, "role") |>
+        map_df(\(x) {
+          d <- tibble::tibble(
+            role_conceptualization = "No",
+            role_data_curation = "No",
+            role_formal_analysis = "No",
+            role_funding_acquisition = "No",
+            role_investigation = "No",
+            role_methodology = "No",
+            role_project_administration = "No",
+            role_resources = "No",
+            role_software = "No",
+            role_supervision = "No",
+            role_validation = "No",
+            role_visualization = "No",
+            role_writing = "No",
+            role_editing = "No"
+          )
+          if (!is.null(x)) {
+            x_values <- unlist(x)
+            x_names <- names(x_values)
+            x_names[x_names == ""] <- x_values[x_names == ""]
+            names(x_values) <- x_names
+            x_values[x_values == x_names] <- "Yes"
+            x_values <- stringr::str_to_title(x_values)
+            for (i in seq_along(x_values)) {
+              d[1, paste0("role_", x_names[i])] <- x_values[i]
+            }
+          }
+
+          d
+        })
+    ) |>
+      unnest(role) |>
       mutate(author_id = seq(length(fm$author)))
-    
+
     print(d_author$affiliation)
-    
+
     # add imported authors----
     if (!adding_author) {
       adding_author <- TRUE
@@ -1443,22 +1550,15 @@ server <- function(input, output, session) {
       for (i in seq(author_n())) {
         grid_proxy_delete_row("gd_author", i - 1)
       }
-      
-      
+
       author_n(nrow(d_author))
       if (author_n() > 0) {
-          grid_proxy_add_row("gd_author", d_author)
-              }
-
-
-
+        grid_proxy_add_row("gd_author", d_author)
+      }
 
       adding_author <- FALSE
     }
-    
   })
-  
-  
 }
 
 shinyApp(ui, server)
