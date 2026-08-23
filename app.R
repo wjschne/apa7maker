@@ -15,6 +15,11 @@ library(readr)
 library(snakecase)
 library(tibble)
 library(fresh)
+library(rmarkdown)
+
+adding_author <- FALSE
+
+
 mytheme <- create_theme(
   theme = "default",
   bs_vars_button(
@@ -65,13 +70,16 @@ ui <- page_fluid(
   title = "Writing in APA Style, 7th Edition with Quarto",
   h1("APAQUARTO: A Quarto Extension for Writing in APA Style"),
   navset_pill_list(
+    id = "main",
     widths = c(3, 9),
     ## title/general ----
     nav_panel(
-      title = "General Options",
+      title = "Title and Authors",
+      fileInput("importqmd", "Import file (optional)", accept = ".qmd"),
       panel(
-        heading = "Title Information",
+        heading = "Title and Authors",
         status = "primary",
+        
         textInput("title", label = "Title", width = "100%") ,
         textInput(
           "shorttitle",
@@ -80,10 +88,120 @@ ui <- page_fluid(
             "Running text in header. If blank, the running header is the title in upper case."
           ),
           width = "100%"
+        ),
+
+      ),
+      ## authors ----
+      panel(
+        heading = "Authors and Affiliations",
+        status = "primary",
+        tags$h3("Authors(s)"),
+        fluidRow(column(width = 12, datagridOutput2("gd_author", height = "auto"))),
+        actionButton(inputId = "addAuthor", label = "Add Author"),
+        
+        tags$h3("Affiliation(s)", style = "margin-top: 12px"),
+        
+        
+        fluidRow(column(
+          width = 12, datagridOutput2("gd_affiliation", height = "auto")
+        )),
+        actionButton(inputId = "addAffiliation", label = "Add Affiliation"),
+        p(
+          "Before clicking outside the table, be sure to finish editing a cell by clicking Enter on the keyboard or by clicking another cell within the table."
+        )
+      ),
+      ## author note ----
+      panel(
+        status = "primary",
+        heading = "Author Note",
+        tags$h3("Status Changes"),
+        textInput(
+          "affiliation-change",
+          label = "Affiliation Change",
+          width = "100%",
+          placeholder = "Example: Fred Jones is now at Generic State University."
+        ),
+        textInput(
+          "deceased-note",
+          label = "Author Deceased",
+          width = "100%",
+          placeholder = "Example: Fred Jones is deceased."
+        ),
+        tags$h3("Disclosures"),
+        textInput(
+          "study-registration",
+          label = "Study Registration",
+          width = "100%",
+          placeholder = "Example: This study was registered at ClinicalTrials.gov (Identifier NTC998877)."
+        ),
+        textInput(
+          "data-sharing",
+          label = "Data Sharing",
+          width = "100%",
+          placeholder = "Example: Data from this study can be accessed at https://academicdata.org/jones2024."
+        ),
+        textInput(
+          "related-report",
+          label = "Related Report",
+          width = "100%",
+          placeholder = "Example: This article is based on the dissertation completed by Jones (2018)"
+        ),
+        textInput(
+          "conflict-of-interest",
+          label = "Conflict of Interest",
+          width = "100%",
+          placeholder = "Example: Fred Jones has been a paid consultant for Corporation X, which funded this study."
+        ),
+        textInput(
+          "financial-support",
+          label = "Financial Support",
+          width = "100%",
+          placeholder = "Example: This study was supported by Grant 123 from Academic Funders United."
+        ),
+        textInput(
+          "gratitude",
+          label = "Gratitude/Acknowledgements",
+          width = "100%",
+          placeholder = "Example: The authors are grateful to Sidney Fiero for thoughtful comments on an early draft of this paper."
+        ),
+        textInput(
+          "author-agreements",
+          label = "Authorships Agreements",
+          width = "100%",
+          placeholder = "Example: Because the authors are equal contributors, order of authorship was determined by a fair coin toss."
+        ),
+        textInput(
+          "correspondence-note",
+          label = "Custom Correspondence Note",
+          width = "100%",
+          placeholder = "Example: Any text here will override the correspondence note that would otherwise be generated automatically."
+        )
+        
+      )
+    ),
+    ## Formats ----
+    nav_panel(
+      title = "Format Options",
+      checkboxGroupInput(
+        "formattype",
+        label = "Formats",
+        inline = TRUE,
+        width = "100%",
+        choices = c(
+          `Word (.docx)` = "apaquarto-docx",
+          `Web (.html)` = "apaquarto-html",
+          `Typst (.pdf)` = "apaquarto-typst",
+          `LaTeX (.pdf)` = "apaquarto-pdf"
+        ),
+        selected = c(
+          "apaquarto-docx",
+          "apaquarto-html",
+          "apaquarto-typst",
+          "apaquarto-pdf"
         )
       ),
       panel(
-        heading = "Document Options",
+        heading = "General Options",
         status = "primary",
         checkboxInput(
           "floatsintext",
@@ -113,7 +231,7 @@ ui <- page_fluid(
           width = "100%"
         ),
         selectizeInput(
-          inputId = "bibiography",
+          inputId = "bibliography",
           label = tooltip(
             trigger = list("Bibliography file(s)", bs_icon("info-circle")),
             "Files must exist in same folder as the Quarto document."
@@ -174,62 +292,6 @@ ui <- page_fluid(
           value = TRUE,
           width = "100%"
         ),
-      ),
-      panel(
-        heading = "Suppress Document Elements",
-        status = "primary",
-        checkboxGroupInput(
-          inputId = "suppress",
-          label = NULL,
-          choices = c(
-            `Title Page` = "suppress-title-page",
-            `Title Page Number` = "suppress-title-page-number",
-            Title = "suppress-title",
-            `Short Title` = "suppress-short-title",
-            `Title in Introduction`  = "suppress-title-introduction",
-            Author = "suppress-author",
-            Affiliation = "suppress-affiliation",
-            `Author Note` = "suppress-author-note",
-            `ORCID` = "suppress-orcid",
-            `Status Change Paragraph` = "suppress-status-change-paragraph",
-            `Disclosures Paragraph` = "suppress-disclosures-paragraph",
-            `CRediT Statement` = "suppress-credit-statement",
-            `Corresponding Paragraph` = "suppress-corresponding-paragraph",
-            `Corresponding Group` = "suppress-corresponding-group",
-            `Corresponding Department` = "suppress-corresponding-department",
-            `Corresponding Affiliation` = "suppress-corresponding-affiliation-name",
-            `Corresponding Address` = "suppress-corresponding-address",
-            `Corresponding City` = "suppress-corresponding-city",
-            `Corresponding Region` = "suppress-corresponding-region",
-            `Corresponding Postal Code` = "suppress-corresponding-postal-code",
-            `Corresponding Email` = "suppress-corresponding-email",
-            `Abstract` = "suppress-abstract",
-            `Impact Statement`  = "suppress-impact-statement",
-            `Keywords` = "suppress-keywords"
-          )
-        )
-      )
-    ),
-    ## Formats ----
-    nav_panel(
-      title = "Format Options",
-      checkboxGroupInput(
-        "formattype",
-        label = "Formats",
-        inline = TRUE,
-        width = "100%",
-        choices = c(
-          `Word (.docx)` = "apaquarto-docx",
-          `Web (.html)` = "apaquarto-html",
-          `Typst (.pdf)` = "apaquarto-typst",
-          `LaTeX (.pdf)` = "apaquarto-pdf"
-        ),
-        selected = c(
-          "apaquarto-docx",
-          "apaquarto-html",
-          "apaquarto-typst",
-          "apaquarto-pdf"
-        )
       ),
       panel(
         heading = "Format-Specific Options",
@@ -397,102 +459,43 @@ ui <- page_fluid(
             width = "100%",
             placeholder = "Example: Student ID: 12345"
           )
+        ),
+        panel(
+          heading = "Suppress Document Elements",
+          status = "primary",
+          checkboxGroupInput(
+            inputId = "suppress",
+            label = NULL,
+            choices = c(
+              `Title Page` = "suppress-title-page",
+              `Title Page Number` = "suppress-title-page-number",
+              Title = "suppress-title",
+              `Short Title` = "suppress-short-title",
+              `Title in Introduction`  = "suppress-title-introduction",
+              Author = "suppress-author",
+              Affiliation = "suppress-affiliation",
+              `Author Note` = "suppress-author-note",
+              `ORCID` = "suppress-orcid",
+              `Status Change Paragraph` = "suppress-status-change-paragraph",
+              `Disclosures Paragraph` = "suppress-disclosures-paragraph",
+              `CRediT Statement` = "suppress-credit-statement",
+              `Corresponding Paragraph` = "suppress-corresponding-paragraph",
+              `Corresponding Group` = "suppress-corresponding-group",
+              `Corresponding Department` = "suppress-corresponding-department",
+              `Corresponding Affiliation` = "suppress-corresponding-affiliation-name",
+              `Corresponding Address` = "suppress-corresponding-address",
+              `Corresponding City` = "suppress-corresponding-city",
+              `Corresponding Region` = "suppress-corresponding-region",
+              `Corresponding Postal Code` = "suppress-corresponding-postal-code",
+              `Corresponding Email` = "suppress-corresponding-email",
+              `Abstract` = "suppress-abstract",
+              `Impact Statement`  = "suppress-impact-statement",
+              `Keywords` = "suppress-keywords"
+            )
+          )
         )
       )
       
-    ),
-    ## authors ----
-    nav_panel(
-      title = "Authors",
-      panel(
-        heading = "Authors and Affiliations",
-        status = "primary",
-        tags$h3("Affiliation(s)"),
-        fluidRow(column(width = 12, datagridOutput2("gd_author"))),
-        actionButton(inputId = "addAuthor", label = "Add Author"),
-        
-        tags$h3("Affiliation(s)", style = "margin-top: 12px"),
-        
-        
-        fluidRow(column(
-          width = 12, datagridOutput2("gd_affiliation")
-        )),
-        actionButton(inputId = "addAffiliation", label = "Add Affiliation"),
-        p(
-          "Before clicking outside the table, be sure to finish editing a cell by clicking Enter on the keyboard or by clicking another cell within the table."
-        )
-      )
-    ),
-    ## author note ----
-    nav_panel(
-      title = "Author Note",
-      panel(
-        status = "primary",
-        heading = "Author Note",
-        tags$h3("Status Changes"),
-        textInput(
-          "affiliation-change",
-          label = "Affiliation Change",
-          width = "100%",
-          placeholder = "Example: Fred Jones is now at Generic State University."
-        ),
-        textInput(
-          "deceased-note",
-          label = "Author Deceased",
-          width = "100%",
-          placeholder = "Example: Fred Jones is deceased."
-        ),
-        tags$h3("Disclosures"),
-        textInput(
-          "study-registration",
-          label = "Study Registration",
-          width = "100%",
-          placeholder = "Example: This study was registered at ClinicalTrials.gov (Identifier NTC998877)."
-        ),
-        textInput(
-          "data-sharing",
-          label = "Data Sharing",
-          width = "100%",
-          placeholder = "Example: Data from this study can be accessed at https://academicdata.org/jones2024."
-        ),
-        textInput(
-          "related-report",
-          label = "Related Report",
-          width = "100%",
-          placeholder = "Example: This article is based on the dissertation completed by Jones (2018)"
-        ),
-        textInput(
-          "conflict-of-interest",
-          label = "Conflict of Interest",
-          width = "100%",
-          placeholder = "Example: Fred Jones has been a paid consultant for Corporation X, which funded this study."
-        ),
-        textInput(
-          "financial-support",
-          label = "Financial Support",
-          width = "100%",
-          placeholder = "Example: This study was supported by Grant 123 from Academic Funders United."
-        ),
-        textInput(
-          "gratitude",
-          label = "Gratitude/Acknowledgements",
-          width = "100%",
-          placeholder = "Example: The authors are grateful to Sidney Fiero for thoughtful comments on an early draft of this paper."
-        ),
-        textInput(
-          "author-agreements",
-          label = "Authorships Agreements",
-          width = "100%",
-          placeholder = "Example: Because the authors are equal contributors, order of authorship was determined by a fair coin toss."
-        ),
-        textInput(
-          "correspondence-note",
-          label = "Custom Correspondence Note",
-          width = "100%",
-          placeholder = "Example: Any text here will override the correspondence note that would otherwise be generated automatically."
-        )
-        
-      )
     ),
     ## abstract ----
     nav_panel(
@@ -675,9 +678,12 @@ server <- function(input, output, session) {
   r_yaml <- reactiveVal("")
   
   
+
+  
+  
   # gd_author ----
   output$gd_author <- renderDatagrid2({
-    e_author <- datagrid(
+    datagrid(
       d_author,
       colnames = cnames,
       data_as_input = TRUE,
@@ -861,30 +867,38 @@ server <- function(input, output, session) {
   
   # add author----
   observeEvent(input$addAuthor, {
-    new_author_id <- author_n() + 1
-    new_affiliation_id <- ifelse(nrow(r_affiliation()) == 0,
-                                 1,
-                                 max(r_affiliation()$affiliation_id) + 1)
-    new_author <- tibble(
-      author_id = new_author_id,
-      author_corresponding = FALSE,
-      author_deceased = FALSE
-    ) |>
-      bind_rows(d_author |> filter(FALSE)) |>
-      mutate(across(starts_with("role_"), \(x) "No"))
+    if (!adding_author) {
+      new_author_id <- author_n() + 1
+      
+      new_affiliation_id <- ifelse(nrow(r_affiliation()) == 0,
+                                   1,
+                                   max(r_affiliation()$affiliation_id) + 1)
+      new_author <- tibble(
+        author_id = new_author_id,
+        author_corresponding = FALSE,
+        author_deceased = FALSE
+      ) |>
+        bind_rows(d_author |> filter(FALSE)) |>
+        mutate(across(starts_with("role_"), \(x) "No"))
+      
+      
+      
+      d_author <- bind_rows(unique(d_author), unique(new_author))
+      
+
+      r_affiliation(bind_rows(
+        r_affiliation() |>
+          filter(affiliation_id != new_affiliation_id) |>
+          unique(),
+        tibble(affiliation_id = new_affiliation_id, author_id = new_author_id) |>
+          unique()
+      ))
+      
+      grid_proxy_add_row(proxy = "gd_author", new_author)
+      author_n(author_n() + 1)
+      
+    }
     
-    d_author <- bind_rows(unique(d_author), unique(new_author))
-    
-    r_affiliation(bind_rows(
-      r_affiliation() |>
-        filter(affiliation_id != new_affiliation_id) |>
-        unique(),
-      tibble(affiliation_id = new_affiliation_id, author_id = new_author_id) |>
-        unique()
-    ))
-    
-    grid_proxy_add_row(proxy = "gd_author", new_author)
-    author_n(author_n() + 1)
     
     
     
@@ -944,7 +958,7 @@ server <- function(input, output, session) {
     
   })
   
-  # format ----
+  # make document ----
   observeEvent(input$btnmakedocument, {
     author_row(1)
     
@@ -995,11 +1009,17 @@ server <- function(input, output, session) {
             if (all(!d$corresponding))
               d$corresponding <- NULL
             x <- as.list(d)
-            if (!all(is.na(d$role))) {
-              x$role <- d$role[[1]]
+            if ("role" %in% colnames(d)) {
+              if (!all(is.na(d$role))) {
+                x$role <- d$role[[1]]
+              }
+              
             }
             
+            
             if (nrow(r_affiliation()) > 0) {
+              r_affiliation(rows_update(r_affiliation(), as_tibble(input$gd_affiliation_data) %>% select(-rowKey), by = "affiliation_id"))
+              
               d_aff <- r_affiliation() |>
                 filter(author_id == i) |>
                 pivot_longer(-c(affiliation_id, author_id)) |>
@@ -1033,6 +1053,7 @@ server <- function(input, output, session) {
           nocite <- paste0("nocitestart\n", nocite, "\nnociteend")
           
         }
+
         
         doc_list <- list(
           title = ifempty(input$title),
@@ -1183,9 +1204,10 @@ server <- function(input, output, session) {
           gsub(pattern = "'false'", replacement = "false") |>
           gsub(pattern = "'true'", replacement = "true") |>
           gsub(pattern = "nocitestart\n", replacement = "") |>
-          gsub(pattern = "nociteend\n", replacement = "") |>
+          gsub(pattern = "\\s{2,}nociteend", replacement = "") |>
           gsub(pattern = "\\|\\-", replacement = "|")
         
+
         doc_yaml <- paste0(
           "---\n",
           trimws(doc_yaml),
@@ -1224,17 +1246,217 @@ server <- function(input, output, session) {
         r_yaml(doc_yaml)
         output$yaml_output <- renderText(doc_yaml)
         
-
-          
-        
-
-    
   })
   
+  # import doc ----
+  observe({
+    req(input$importqmd)
+    fm <- rmarkdown::yaml_front_matter(input$importqmd$datapath)
+    
+    
+    ## text inputs
+    for (fd in c("title", 
+                 "shorttitle", 
+                 "journal",
+                 "volume",
+                 "copyrightnotice",
+                 "copyrighttext",
+                 "course",
+                 "professor",
+                 "student-note",
+                 "affiliation-change",
+                 "deceased-note",
+                 "study-registration",
+                 "data-sharing",
+                 "related-report",
+                 "conflict-of-interest",
+                 "financial-support",
+                 "gratitude",
+                 "author-agreements",
+                 "correspondence-note",
+                 "citation-last-author-separator",
+                 "citation-masked-author",
+                 "citation-masked-date",
+                 "title-block-author-note",
+                 "title-block-correspondence-note",
+                 "title-block-role-introduction",
+                 "title-impact-statement",
+                 "title-word-count",
+                 "references-meta-analysis"
+    )) {
+      for (fmt in fm[["format"]]) {
+        if (!is.character(fmt)) {
+          updateTextInput(session = session, inputId = fd, value = fmt[[fd]])
+        }}
+      
+      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "author-note", fd))
+      
+      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "author-note", "status-changes", fd))
+      
+      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "author-note", "disclosures", fd))
+      
+      updateTextInput(session = session, inputId = fd, value = purrr::pluck(fm, "language", fd))
+      
+      
+      
+      updateTextInput(session = session, inputId = fd, value = fm[[fd]])
+    }
+    
+    ## text area inputs
+    for (fd in c("abstract", "impact-statment")) {
+      for (fmt in fm[["format"]]) {
+        if (!is.character(fmt)) {
+          updateTextAreaInput(session = session, inputId = fd, value = fmt[[fd]])
+        }}
+      
+      updateTextAreaInput(session = session, inputId = fd, value = fm[[fd]])
+    }
+    
+    ## date inputs
+    for (fd in c("duedate")) {
+      for (fmt in fm[["format"]]) {
+        if (!is.character(fmt)) {
+          updateDateInput(session = session, inputId = fd, value = fmt[[fd]])
+        }}
+      
+      updateDateInput(session = session, inputId = fd, value = fm[[fd]])
+    }
+    
+    ## list imputs
+    for (fd in c("bibliography", 
+                 "masked-citations", 
+                 "nocite",
+                 "keywords")) {
+      updateSelectizeInput(session = session, inputId = fd, selected = fm[[fd]], choices = fm[[fd]])
+    }
+    
+    for (fd in c("lang")) {
+      updateSelectInput(session = session, inputId = fd, selected = fm[[fd]])
+    }
+    
+    ## checkbox inputs
+    for (fd in c("floatsintext", 
+                 "numbered-lines", 
+                 "no-ampersand-parenthetical", 
+                 "mask",
+                 "meta-analysis",
+                 "list-of-figures",
+                 "list-of-tables",
+                 "includeduedate",
+                 "word-count"
+    )) {
+      
+      for (fmt in fm[["format"]]) {
+        if (!is.character(fmt)) {
+          updateCheckboxInput(session = session, inputId = fd, value = fmt[[fd]])
+        }}
+      
+      updateCheckboxInput(session = session, inputId = fd, value = fm[[fd]])
+    }
+    
+    ## checkboxgroup
+    if (any(stringr::str_starts(names(fm), pattern = "suppress\\-"))) {
+      updateCheckboxGroupInput(session = session, inputId = "suppress", selected  = names(fm)[stringr::str_starts(names(fm), pattern = "suppress\\-")])
+    }
+    
+    updateCheckboxGroupInput(session = session, inputId = "formattype",
+                             selected = names(fm[["format"]]))
+    
+    
+    ## radio button
+    for (fd in c("fontsize", "a4paper", "documentmode")) {
+      for (fmt in fm[["format"]]) {
+        if (!is.character(fmt)) {
+          updateNumericInput(session = session, inputId = fd, value = fmt[[fd]])
+        }}
+      
+      updateRadioButtons(session = session, inputId = fd, selected = fm[[fd]])
+    }
+    
+    ## numeric input
+    
+    for (fd in c("blank-lines-above-title", "blank-lines-above-author-note")) {
+      
+      
+      for (fmt in fm[["format"]]) {
+        if (!is.character(fmt)) {
+          updateNumericInput(session = session, inputId = fd, value = fmt[[fd]])
+        }
+        
+        
+        
+      }
+      
+      updateNumericInput(session = session, inputId = fd, value = fm[[fd]])
+      
+    }
+    
+ 
+    
+    d_author <<- tibble(author_name = map(fm$author, "name") |> map_chr(\(x) ifelse(is.null(x), "", x)),
+                       author_orcid = map(fm$author, "orcid") |> map_chr(\(x) ifelse(is.null(x), "", x)),
+                       author_email = map(fm$author, "email") |> map_chr(\(x) ifelse(is.null(x), "", x)),
+                       author_corresponding = map(fm$author, "corresponding") |> map_lgl(\(x) ifelse(is.null(x), FALSE, x)),
+                       author_deceased = map(fm$author, "deceased") |> map_lgl(\(x) ifelse(is.null(x), FALSE, x)),
+                       affiliation = map(fm$author, "affiliation"),
+                       role = map(fm$author, "role") |> map_df(\(x) {
+                         d <- tibble::tibble(role_conceptualization = "No",
+                                             role_data_curation = "No",
+                                             role_formal_analysis = "No",
+                                             role_funding_acquisition = "No",
+                                             role_investigation = "No",
+                                             role_methodology = "No",
+                                             role_project_administration = "No",
+                                             role_resources = "No",
+                                             role_software = "No",
+                                             role_supervision = "No",
+                                             role_validation = "No",
+                                             role_visualization = "No",
+                                             role_writing = "No",
+                                             role_editing = "No")
+                         if (!is.null(x)) {
+                           
+                           x_values <- unlist(x)
+                           x_names <- names(x_values)
+                           x_names[x_names == ""] <- x_values[x_names == ""]
+                           names(x_values) <- x_names
+                           x_values[x_values == x_names] <- "Yes"
+                           x_values <- stringr::str_to_title(x_values)
+                           for (i in seq_along(x_values)) {
+                             d[1,paste0("role_", x_names[i])] <- x_values[i]
+                             
+                           }
+                         }
+                         
+                         d
+                         
+                       })) |> 
+      unnest(role) |> 
+      mutate(author_id = seq(length(fm$author)))
+    
+    print(d_author$affiliation)
+    
+    # add imported authors----
+    if (!adding_author) {
+      adding_author <- TRUE
 
-  
+      for (i in seq(author_n())) {
+        grid_proxy_delete_row("gd_author", i - 1)
+      }
+      
+      
+      author_n(nrow(d_author))
+      if (author_n() > 0) {
+          grid_proxy_add_row("gd_author", d_author)
+              }
 
-  
+
+
+
+      adding_author <- FALSE
+    }
+    
+  })
   
   
 }
