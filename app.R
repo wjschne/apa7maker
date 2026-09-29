@@ -190,6 +190,19 @@ document_body <- function(path) {
   paste(body, collapse = "\n")
 }
 
+# Whether a yaml field says yes. A field may be written as a bare true, or
+# quoted, or spelled yes, and a field that is there but false is not on ---
+# `suppress-title-page: false` asks for the title page to be kept.
+is_yes <- function(x) {
+  if (is.null(x) || length(x) == 0) {
+    return(FALSE)
+  }
+  if (is.logical(x)) {
+    return(isTRUE(x[1]))
+  }
+  tolower(trimws(as.character(x[1]))) %in% c("true", "yes")
+}
+
 # The first of its arguments that is not NULL, or NULL when none of them is.
 ornull <- function(...) {
   for (x in list(...)) {
@@ -870,18 +883,18 @@ ui <- page_fluid(
           "documentmode",
           label = NULL,
           choices = c(
-            Manuscript = "man",
-            Journal = "jou",
-            `LaTeX Style Document` = "doc",
+            Manuscript = "manuscript",
+            Journal = "journal",
+            `LaTeX Style Document` = "document",
             Student = "stu",
             `Thesis/Dissertation` = "thesis"
           ),
-          selected = "man"
+          selected = "manuscript"
         ),
         conditionalPanel(
           condition = "input.documentmode == 'thesis'",
           p(
-            "The pages a dissertation carries are set on the ",
+            "The options a dissertation carries are set on the ",
             tags$strong("Dissertation"),
             " tab."
           )
@@ -1042,7 +1055,7 @@ ui <- page_fluid(
             trigger = list("Type of work", bs_icon("info-circle")),
             "The title page reads \"A Dissertation\" or \"A Thesis\"."
           ),
-          choices = c(Dissertation = "Dissertation", Thesis = "Thesis"),
+          choices = c(Dissertation = "Dissertation", Thesis = "Thesis", `Dissertation Proposal` = "Dissertation Proposal", `Thesis Proposal` = "Thesis Proposal"),
           selected = "Dissertation"
         ),
         textInput(
@@ -1563,9 +1576,10 @@ server <- function(input, output, session) {
         icon = icon("trash")
       ) |>
       grid_columns(
-        column = c("committee_name", "committee_role", "committee_affiliation"),
-        width = c(250, 200, 300)
+        column = c("committee_name", "committee_role"),
+        width = c(300, 250)
       ) |>
+      grid_columns(column = c("committee_id"), width = 80) |>
       grid_editor(column = "committee_name", type = "text") |>
       grid_editor(column = "committee_role", type = "text") |>
       grid_editor(column = "committee_affiliation", type = "text") |>
@@ -2035,7 +2049,7 @@ server <- function(input, output, session) {
     # name goes under `title` rather than on `journal` itself, and version 6
     # assembles the issue line out of the year, the volume, the issue and the
     # pages rather than leaving it to be written by hand.
-    if (input$documentmode == "jou") {
+    if (input$documentmode == "journal" || input$documentmode == "jou") {
       journal <- list(
         title = ifempty(input$`journal-title`),
         logo = ifempty(input$`journal-logo`),
@@ -2627,16 +2641,22 @@ server <- function(input, output, session) {
     }
 
     ## checkboxgroup
-    if (any(stringr::str_starts(names(fm), pattern = "suppress\\-"))) {
-      updateCheckboxGroupInput(
-        session = session,
-        inputId = "suppress",
-        selected = names(fm)[stringr::str_starts(
-          names(fm),
-          pattern = "suppress\\-"
-        )]
-      )
-    }
+    #
+    # Only the ones the document actually turns on. A suppress field written
+    # as false asks for the element to be kept, and ticking it because it was
+    # mentioned took the title page away from every document that had said,
+    # in so many words, to keep it. Written every time, so that importing a
+    # second document clears what the first one ticked.
+    suppress_fields <- names(fm)[str_starts(names(fm), "suppress\\-")]
+    updateCheckboxGroupInput(
+      session = session,
+      inputId = "suppress",
+      selected = suppress_fields[vapply(
+        suppress_fields,
+        \(nm) is_yes(fm[[nm]]),
+        logical(1)
+      )]
+    )
 
     updateCheckboxGroupInput(
       session = session,
@@ -2691,11 +2711,16 @@ server <- function(input, output, session) {
     if (!is.null(mode)) {
       # Version 6 accepts each mode spelled out in full.
       mode <- c(
-        manuscript = "man",
-        journal = "jou",
-        document = "doc",
-        student = "stu",
-        dissertation = "thesis"
+        manuscript = "manuscript",
+        journal = "journal",
+        document = "document",
+        student = "student",
+        dissertation = "thesis",
+        man = "manuscript",
+        jou = "journal",
+        doc = "document",
+        stu = "student",
+        thesis = "thesis"
       )[mode] |>
         unname() |>
         coalesce(mode)
