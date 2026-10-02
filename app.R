@@ -2944,7 +2944,14 @@ server <- function(input, output, session) {
       author_deceased = map(fm$author, "deceased") |>
         map_lgl(\(x) ifelse(is.null(x), FALSE, x)),
       affiliations = map(fm$author, "affiliations"),
-      role = map(fm$author, \(a) ornull(a[["roles"]], a[["role"]])) |>
+      role = map(fm$author, \(a) {
+        if (is.list(a) && "roles" %in% names(a)) {
+          print(a)
+          ornull(a[["roles"]], a[["role"]])
+        } else {
+          NULL  # Or whatever default value you want
+        }
+      }) |>
         map_df(\(x) {
           d <- tibble::tibble(
             role_conceptualization = "No",
@@ -3016,7 +3023,15 @@ server <- function(input, output, session) {
     # they were written: under `affiliations` or under `affiliation`, as a
     # list of them or as a single one, as objects or as plain names.
     affiliation_entries <- function(author) {
-      entries <- ornull(author[["affiliations"]], author[["affiliation"]])
+      aff <- NULL
+      if (is.list(author) && "affiliations" %in% names(author)) {
+        aff <- author[["affiliations"]]
+      } else if (is.list(author) && "affiliation" %in% names(author)) {
+        aff <- author[["affiliation"]]
+      } else {
+        NULL  # Or whatever default value you want
+      }
+      entries <- ornull(aff)
       if (is.list(entries) && !is.null(names(entries))) {
         entries <- list(entries)
       }
@@ -3031,13 +3046,16 @@ server <- function(input, output, session) {
     # inline under the first author to use it, for the authors after them to
     # point at.
     shared_affiliations <- list()
-    for (entries in c(list(fm[["affiliations"]]), lapply(fm$author, affiliation_entries))) {
-      for (a in entries) {
-        if (is.list(a) && !is.null(a[["id"]])) {
-          shared_affiliations[[as.character(a[["id"]])[1]]] <- a
+    if (!is.null(fm[["affiliations"]])) {
+      for (entries in c(list(fm[["affiliations"]]), lapply(fm$author, affiliation_entries))) {
+        for (a in entries) {
+          if (is.list(a) && !is.null(a[["id"]])) {
+            shared_affiliations[[as.character(a[["id"]])[1]]] <- a
+          }
         }
       }
     }
+    
     
     as_affiliation_row <- function(entry) {
       # An author may point at an affiliation someone else spelled out,
